@@ -36,10 +36,10 @@ int main(int argc, char ** argv)
 	exit(1);
   }
   snprintf(checkfileName,100,"%s",argv[10]);
-  int x1 = atoi(argv[11]);
-  int x2 = atoi(argv[12]);
-  int y1 = atoi(argv[13]);
-  int y2 = atoi(argv[14]);
+  int x1 = atoi(argv[11]) - 1;
+  int x2 = atoi(argv[12]) - 1;
+  int y1 = atoi(argv[13]) - 1;
+  int y2 = atoi(argv[14]) - 1;
   char * outputfileName = (char *)malloc(sizeof(char) * 100);
   if(outputfileName==NULL){
 	fprintf(stderr,"error - could not allocate string\n");
@@ -82,14 +82,14 @@ int main(int argc, char ** argv)
   thresh = thresh / 4.5; // divide by 4.5 to get R_ij * ff_i * ff_j value
 
   // tally pairwise correlations
-  for (int i = x1 - 1; i < x2 - 1; i++){ // start with each SNP in first set
-    for (int j = y1 - 1; j < y2 - 1; j++){  // pair with each SNP in second set
+  for (int i = x1; i < x2; i++){ // start with each SNP in first set
+    for (int j = y1; j < y2; j++){  // pair with each SNP in second set
       if(j <= i){//change to <
          continue;
       }
       ++comparisons;
 
-      //fprintf(stdout,"helper %d snp1 %d snp2 %d i %d j %d comparisons %d yedge %d\n",getpid(),snp1,snp2,i,j,comparisons,yedge);
+      fprintf(stdout,"helper %d x1 %d y1 %d x2 %d y2 %d i %d j %d comparisons %d\n",getpid(),x1,y1,x2,y2,i,j,comparisons);
 
       //if (start1+i < start2+j) { // only compute upper diagonal of matrix
 

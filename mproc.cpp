@@ -621,7 +621,7 @@ int main(int argc, char ** argv)
 				_exit(1);
 			}
 			pids.push_back(pid);
-                        fprintf(stdout,"ccc %d snp1 %d snp2 %d step %d xbound %d ybound %d\n",pid,snp1,snp2,step2,xbound,ybound);
+                        fprintf(stdout,"mproc %d x1 %d y1 %d step %d x2 %d y2 %d\n",pid,x1[x],y1[x],step2,x2[x],y2[x]);
 			++curprocs;
 			if(curprocs >= maxprocesses){
 				while(curprocs >= maxprocesses){
