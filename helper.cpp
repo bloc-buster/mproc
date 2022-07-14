@@ -23,30 +23,29 @@ int main(int argc, char ** argv)
   int start1 = atoi(argv[5]);
   int start2 = atoi(argv[6]);
   float thresh = atof(argv[7]);
-  int snp1 = atoi(argv[8]);
-  int snp2 = atoi(argv[9]);
-  int step = atoi(argv[10]);
-  int xbound = atoi(argv[11]);
-  int ybound = atoi(argv[12]);
-  int snp_count = 0;
+  int step = atoi(argv[8]);
   char * OUTPUT_FOLDER = (char *)malloc(sizeof(char) * 100);
   if(OUTPUT_FOLDER==NULL){
 	fprintf(stderr,"error - could not allocate string\n");
 	exit(1);
   }
-  snprintf(OUTPUT_FOLDER,100,"%s",argv[13]);
-  char * outputfileName = (char *)malloc(sizeof(char) * 100);
-  if(outputfileName==NULL){
-	fprintf(stderr,"error - could not allocate string\n");
-	exit(1);
-  }
-  snprintf(outputfileName,100,"%s/%s.gml",OUTPUT_FOLDER,argv[14]);
+  snprintf(OUTPUT_FOLDER,100,"%s",argv[9]);
   char * checkfileName = (char *)malloc(sizeof(char) * 100);
   if(checkfileName==NULL){
 	fprintf(stderr,"error - could not allocate string\n");
 	exit(1);
   }
-  snprintf(checkfileName,100,"%s",argv[15]);
+  snprintf(checkfileName,100,"%s",argv[10]);
+  int x1 = atoi(argv[11]);
+  int x2 = atoi(argv[12]);
+  int y1 = atoi(argv[13]);
+  int y2 = atoi(argv[14]);
+  char * outputfileName = (char *)malloc(sizeof(char) * 100);
+  if(outputfileName==NULL){
+	fprintf(stderr,"error - could not allocate string\n");
+	exit(1);
+  }
+  snprintf(outputfileName,100,"%s/%s.gml",OUTPUT_FOLDER,argv[15]);
   vector<string> results;
   char result[100];
   unsigned long long int comparisons = 0;
@@ -83,24 +82,8 @@ int main(int argc, char ** argv)
   thresh = thresh / 4.5; // divide by 4.5 to get R_ij * ff_i * ff_j value
 
   // tally pairwise correlations
-  --snp1;
-  --snp2;
-  --xbound;
-  --ybound;
-  int xedge = atoi(argv[16]);
-  int yedge = atoi(argv[17]);
-  int step1 = step;
-  int step2 = step;
-  if(xedge==1){
-     xbound = numSnps;
-     step1 = numSnps;
-  }
-  if(yedge==1){
-     ybound = numSnps;
-     step2 = numSnps;
-  }
-  for (int i = snp1; i < snp1 + step1 && i < xbound && i < numSnps; i++){ // start with each SNP in first set
-    for (int j = snp2; j < snp2 + step2 && j < ybound && j < numSnps; j++){  // pair with each SNP in second set
+  for (int i = x1 - 1; i < x2 - 1; i++){ // start with each SNP in first set
+    for (int j = y1 - 1; j < y2 - 1; j++){  // pair with each SNP in second set
       if(j <= i){//change to <
          continue;
       }

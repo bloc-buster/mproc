@@ -10,6 +10,7 @@
 #echo "ERROR! Overwrite ccc.sh with sbatch parameters for your local system, then comment out these lines."
 #exit 1
 
+
 if [[ "$#" -eq 1 ]]
 then
 	conclude=$1
@@ -53,22 +54,22 @@ let maxprocesses=$1
 shift
 outputfolder=$1
 shift
-let snp1=$1
-shift
-let snp2=$1
+let count=$1
 shift
 let step=$1
 shift
-let count=$1
+let xstart=$1
 shift
-let xedge=$1
+let xstop=$1
 shift
-let yedge=$1
+let ystart=$1
+shift
+let ystop=$1
 shift
 
-echo "running mproc with granularity $granularity2 procs $maxprocesses snp1 $snp1 snp2 $snp2 step $step count $count xedge $xedge yedge $yedge"
+echo "running mproc with granularity $granularity2 procs $maxprocesses count $count step $step xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
 
-srun ./mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $snp1 $snp2 $step $count $xedge $yedge
+srun ./mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop
 let status=$?
 if [ "$status" != "0" ]
 then

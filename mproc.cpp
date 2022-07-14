@@ -501,37 +501,6 @@ int main(int argc, char ** argv)
 	long int numEdges = 0; // tally number of edges printed out
 
 	/************************/ 
-	if(argc >= 11){
-	   OUTPUT_FOLDER = argv[10];
-	}
-
-	char outputfileName[100];
-	char checkfileName[100];
-	char arg1[20];
-	char arg2[20];
-	char arg3[20];
-	char arg4[20];
-	char arg5[20];
-	char arg6[20];
-	char arg7[20];
-	char arg8[20];
-	char arg9[20];
-	char arg10[20];
-	char arg11[20];
-	char arg12[20];
-	char arg13[20];
-        char arg14[2];
-        char arg15[2];
-	sprintf(arg1,"%d",numInd);
-	sprintf(arg2,"%d",numSnps);
-	sprintf(arg3,"%d",numNodes);
-	sprintf(arg4,"%d",numSnps1);
-	sprintf(arg5,"%d",numSnps2);
-	sprintf(arg6,"%d",start1);
-	sprintf(arg7,"%d",start2);
-	sprintf(arg8,"%f",thresh);
-	vector<int> pids;
-	int temp_file_number = 1;
 	int granularity = 7; // default
 	if(argc >= 9){
 	   granularity = atoi(argv[8]);
@@ -548,22 +517,6 @@ int main(int argc, char ** argv)
 		semRelease(SEMNAME);
 		exit(1);
 	}
-	int snip1 = atoi(argv[11]);
-	int snip2 = atoi(argv[12]);
-	int step1 = atoi(argv[13]);
-	int step2 = (int)((float)step1 / (float)granularity);
-	if(step2 < 1){
-		step2 = 1;
-	}
-	int nodecount = atoi(argv[14]);
-	sprintf(checkfileName,"%s/checksum%d",OUTPUT_FOLDER,nodecount);
-	FILE * checksum = fopen(checkfileName,"w");
-	if(checksum==NULL){
-		fprintf(stderr,"error - could not create checksum file\n");
-		exit(1);
-	}
-	fprintf(checksum,"%d",0);
-	fclose(checksum);
 	int maxprocesses = 15; // some servers have limits on simultaneous processes
 	if(argc >= 10){
 	   maxprocesses = atoi(argv[9]);
@@ -574,43 +527,96 @@ int main(int argc, char ** argv)
 		   exit(1);
 	   }
 	}
+	if(argc >= 11){
+	   OUTPUT_FOLDER = argv[10];
+	}
+	int nodecount = atoi(argv[11]);
+	char checkfileName[100];
+	sprintf(checkfileName,"%s/checksum%d",OUTPUT_FOLDER,nodecount);
+	FILE * checksum = fopen(checkfileName,"w");
+	if(checksum==NULL){
+		fprintf(stderr,"error - could not create checksum file\n");
+		exit(1);
+	}
+	fprintf(checksum,"%d",0);
+	fclose(checksum);
+	int step1 = atoi(argv[12]);
+	int step2 = (int)((float)step1 / (float)granularity);
+	if(step2 < 1){
+		step2 = 1;
+	}
 	int curprocs = 0;
-	int xbound = snip1 + step1;
-	int ybound = snip2 + step1;
-	sprintf(arg11,"%d",step2);
-	sprintf(arg12,"%d",xbound);
-	sprintf(arg13,"%d",ybound);
-        int xedge = atoi(argv[15]);
-        int yedge = atoi(argv[16]);
-        sprintf(arg15,"%d",yedge);
-        int ycount = 0;
-	for(int y = snip2;y < ybound && y < numSnps;y += step2){
-                ycount += 1;
-                if(ycount > granularity && yedge==1){
-			sprintf(arg15,"1");
-                } else {
-			sprintf(arg15,"0");
+	int xstart = atoi(argv[13]);
+	int xstop = atoi(argv[14]);
+	int ystart = atoi(argv[15]);
+	int ystop = atoi(argv[16]);
+	vector<int> x1;
+	vector<int> x2;
+	vector<int> y1;
+	vector<int> y2;
+//srun ./mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop
+	fprintf(stdout,"mproc in %s out %s thresh %f ind %d snps %d headrows %d columns %d gran %d maxprocs %d out %s count %d step %d x1 %d x2 %d y1 %d y2 %d\n",argv[1],argv[2],thresh,numInd,numSnps,numheadrows,numheadcols,granularity,maxprocesses,OUTPUT_FOLDER,nodecount,step1,xstart,xstop,ystart,ystop);
+	for(int x = 0; x < granularity; ++x){
+		for(int y = x; y < granularity; ++y){
+			if(x == granularity - 1){
+				x1.push_back(x * step2 + xstart);
+				x2.push_back(xstop);
+			} else {
+				x1.push_back(x * step2 + xstart);
+				x2.push_back((x + 1) * step2 + xstart);
+			}
+			if(y == granularity - 1){
+				y1.push_back(y * step2 + ystart);
+				y2.push_back(ystop);
+			} else {
+				y1.push_back(y * step2 + ystart);
+				y2.push_back((y + 1) * step2 + ystart);
+			}
 		}
-                int xcount = 0;
-		for(int x = snip1;x < xbound && x < numSnps;x += step2){
-			if(x > y)
-				break;
-                        xcount += 1;
-                        if(xcount > granularity && xedge==1){
-        			sprintf(arg14,"1");
-                        } else {
-				sprintf(arg14,"0");
-                        }
-			int snp1 = x;
-			int snp2 = y;
-			sprintf(arg9,"%d",snp1);
-			sprintf(arg10,"%d",snp2);
-			sleep(1);
-			sprintf(outputfileName,"temp_%d_%d",snp1,snp2);
-			sleep(1);
+	}
+	//for(int x = 0; x < x1.size(); ++x){
+	//	fprintf(stdout,"x1 %d x2 %d y1 %d y2 %d\n",x1[x],x2[x],y1[x],y2[x]);
+	//}
+	char arg0[20];
+	char arg1[20];
+	char arg2[20];
+	char arg3[20];
+	char arg4[20];
+	char arg5[20];
+	char arg6[20];
+	char arg7[20];
+	char arg8[20];
+	char arg9[100];
+	char arg10[100];
+	char arg11[20];
+	char arg12[20];
+        char arg13[20];
+        char arg14[20];
+	char arg15[100];
+	sprintf(arg0,"%d",numInd);
+	sprintf(arg1,"%d",numSnps);
+	sprintf(arg2,"%d",numNodes);
+	sprintf(arg3,"%d",numSnps1);
+	sprintf(arg4,"%d",numSnps2);
+	sprintf(arg5,"%d",start1);
+	sprintf(arg6,"%d",start2);
+	sprintf(arg7,"%f",thresh);
+	sprintf(arg8,"%d",step2);
+	sprintf(arg9,"%s",OUTPUT_FOLDER);
+	sprintf(arg10,"%s",checkfileName);
+	vector<int> pids;
+	int temp_file_number = 1;
+	for(int x = 0; x < x1.size(); ++x){
+	//for(int y = snip2;y < ybound && y < numSnps;y += step2){
+		//for(int x = snip1;x < xbound && x < numSnps;x += step2){
+			sprintf(arg11,"%d",x1[x]);
+			sprintf(arg12,"%d",x2[x]);
+			sprintf(arg13,"%d",y1[x]);
+			sprintf(arg14,"%d",y2[x]);
+			sprintf(arg15,"temp_%d_%d",x1[x],y1[x]);//outputfileName
 			pid_t pid = fork();
 			if(pid==0){ // child
-				execl("helper",arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,OUTPUT_FOLDER,outputfileName,checkfileName,arg14,arg15,NULL);//no log file
+				execl("helper",arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,NULL);//no log file
 				fprintf(stderr,"error launching child process %d\n",temp_file_number - 1);
 				_exit(1);
 			}
@@ -631,7 +637,7 @@ int main(int argc, char ** argv)
 				}
 
 			}
-		}
+		//}
 	}
 	for(int z = 0;z < pids.size();++z){
 		int status;
