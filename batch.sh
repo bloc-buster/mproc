@@ -118,8 +118,12 @@ y_start=()
 y_stop=()
 for (( x = 0; x < $granularity1; x += 1 ))
 do
-	for (( y = $x; y < $granularity1; y += 1 ))
+	for (( y = 0; y < $granularity1; y += 1 ))
 	do
+		if [[ $x -gt $y ]]
+		then
+			continue
+		fi
 		if [[ $x -eq $(( granularity1 - 1 )) ]]
 		then
 			x_start+=( $(( x * $step + 1 )) )
@@ -131,7 +135,7 @@ do
 		if [[ $y -eq $(( granularity1 - 1 )) ]]
 		then
 			y_start+=( $(( y * $step + 1 )) )
-			y_stop+=($numsnps)
+			y_stop+=( $((numsnps + 1)) )
 		else
 			y_start+=( $(( y * $step + 1 )) )
 			y_stop+=( $(( (y + 1) * $step + 1 )) )
@@ -142,7 +146,7 @@ done
 let count=1
 for (( x = 0; x < ${#x_start[@]}; x += 1 ))
 do
-	echo "running ccc.sh with granularity $granularity2 step $step count $count x-start ${x_start[$x]} x-stop ${x_stop[$x]} y-start ${y_start[$x]} y-stop ${y_stop[$x]}"
+	#echo "running ccc.sh with granularity $granularity2 step $step count $count x-start ${x_start[$x]} x-stop ${x_stop[$x]} y-start ${y_start[$x]} y-stop ${y_stop[$x]}"
 	command sbatch --output=$slurmoutfile ./ccc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}
 	let count+=1
 done

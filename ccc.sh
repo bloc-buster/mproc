@@ -2,8 +2,9 @@
 
 #SBATCH -p Lewis 
 #SBATCH -N 1
-#SBATCH -c 15
-#SBATCH --mem 32G
+#SBATCH -c 24
+#SBATCH --exclusive
+#SBATCH --mem 0G
 #SBATCH --time=0-01:00:00
 #SBATCH --account=climerlab
 
@@ -67,7 +68,7 @@ shift
 let ystop=$1
 shift
 
-echo "running mproc with granularity $granularity2 procs $maxprocesses count $count step $step xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
+#echo "running mproc with granularity $granularity2 procs $maxprocesses count $count step $step xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
 
 srun ./mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop
 let status=$?

@@ -88,8 +88,10 @@ int main(int argc, char ** argv)
          continue;
       }
       ++comparisons;
+      //fprintf(stdout,"helper %d x1 %d x2 %d y1 %d y2 %d i %d j %d comparisons %d\n",getpid(),x1,x2,y1,y2,i,j,comparisons);
+	continue;
+	fprintf(stdout,"did not continue\n");
 
-      fprintf(stdout,"helper %d x1 %d y1 %d x2 %d y2 %d i %d j %d comparisons %d\n",getpid(),x1,y1,x2,y2,i,j,comparisons);
 
       //if (start1+i < start2+j) { // only compute upper diagonal of matrix
 
@@ -344,12 +346,15 @@ int main(int argc, char ** argv)
      	fclose(output);
   }
 
+  //fprintf(stdout,"helper %d x1 %d x2 %d y1 %d y2 %d\n",getpid(),x1,x2,y1,y2);
+
   if(comparisons > 0){
   	if(semWait()==1){
 		// update comparisons
 		FILE * read;
 		if((read = fopen(checkfileName, "r")) == NULL){
 			fprintf(stderr,"error - checksum file could not be opened\n");
+			//semSignal();
 			exit(1);
 		}
 		unsigned long long int comps = 0;
@@ -359,6 +364,7 @@ int main(int argc, char ** argv)
 		FILE * write;
 		if((write = fopen(checkfileName, "w"))==NULL){
 			fprintf(stderr,"error - could not write to checksum file\n");
+			//semSignal();
 			exit(1);
 		}
 		fprintf(write,"%llu",comps);

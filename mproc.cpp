@@ -555,23 +555,34 @@ int main(int argc, char ** argv)
 	vector<int> y1;
 	vector<int> y2;
 //srun ./mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop
-	fprintf(stdout,"mproc in %s out %s thresh %f ind %d snps %d headrows %d columns %d gran %d maxprocs %d out %s count %d step %d x1 %d x2 %d y1 %d y2 %d\n",argv[1],argv[2],thresh,numInd,numSnps,numheadrows,numheadcols,granularity,maxprocesses,OUTPUT_FOLDER,nodecount,step1,xstart,xstop,ystart,ystop);
+//	fprintf(stdout,"mproc in %s out %s thresh %f ind %d snps %d headrows %d columns %d gran %d maxprocs %d out %s count %d step %d x1 %d x2 %d y1 %d y2 %d\n",argv[1],argv[2],thresh,numInd,numSnps,numheadrows,numheadcols,granularity,maxprocesses,OUTPUT_FOLDER,nodecount,step1,xstart,xstop,ystart,ystop);
 	for(int x = 0; x < granularity; ++x){
-		for(int y = x; y < granularity; ++y){
+		for(int y = 0; y < granularity; ++y){
+			int x1val;
+			int x2val;
+			int y1val;
+			int y2val;
 			if(x == granularity - 1){
-				x1.push_back(x * step2 + xstart);
-				x2.push_back(xstop);
+				x1val = x * step2 + xstart;
+				x2val = xstop;
 			} else {
-				x1.push_back(x * step2 + xstart);
-				x2.push_back((x + 1) * step2 + xstart);
+				x1val = x * step2 + xstart;
+				x2val = (x + 1) * step2 + xstart;
 			}
 			if(y == granularity - 1){
-				y1.push_back(y * step2 + ystart);
-				y2.push_back(ystop);
+				y1val = y * step2 + ystart;
+				y2val = ystop;
 			} else {
-				y1.push_back(y * step2 + ystart);
-				y2.push_back((y + 1) * step2 + ystart);
+				y1val = y * step2 + ystart;
+				y2val = (y + 1) * step2 + ystart;
 			}
+			if(x1val > y1val){
+				continue;
+			}
+			x1.push_back(x1val);
+			x2.push_back(x2val);
+			y1.push_back(y1val);
+			y2.push_back(y2val);
 		}
 	}
 	//for(int x = 0; x < x1.size(); ++x){
@@ -621,7 +632,7 @@ int main(int argc, char ** argv)
 				_exit(1);
 			}
 			pids.push_back(pid);
-                        fprintf(stdout,"mproc %d x1 %d y1 %d step %d x2 %d y2 %d\n",pid,x1[x],y1[x],step2,x2[x],y2[x]);
+                        //fprintf(stdout,"mproc %d step %d x1 %d x2 %d y1 %d y2 %d\n",pid,step2,x1[x],x2[x],y1[x],y2[x]);
 			++curprocs;
 			if(curprocs >= maxprocesses){
 				while(curprocs >= maxprocesses){
