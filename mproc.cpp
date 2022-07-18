@@ -532,14 +532,15 @@ int main(int argc, char ** argv)
 	}
 	int nodecount = atoi(argv[11]);
 	char checkfileName[100];
-	sprintf(checkfileName,"%s/checksum%d",OUTPUT_FOLDER,nodecount);
-	FILE * checksum = fopen(checkfileName,"w");
+	//sprintf(checkfileName,"%s/checksum",OUTPUT_FOLDER);
+	sprintf(checkfileName,"%s/checksum_%d",OUTPUT_FOLDER,nodecount);
+	/*FILE * checksum = fopen(checkfileName,"w");
 	if(checksum==NULL){
 		fprintf(stderr,"error - could not create checksum file\n");
 		exit(1);
 	}
 	fprintf(checksum,"%d",0);
-	fclose(checksum);
+	fclose(checksum);*/
 	int step1 = atoi(argv[12]);
 	int step2 = (int)((float)step1 / (float)granularity);
 	if(step2 < 1){
@@ -555,26 +556,26 @@ int main(int argc, char ** argv)
 	vector<int> y1;
 	vector<int> y2;
 //srun ./mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop
-//	fprintf(stdout,"mproc in %s out %s thresh %f ind %d snps %d headrows %d columns %d gran %d maxprocs %d out %s count %d step %d x1 %d x2 %d y1 %d y2 %d\n",argv[1],argv[2],thresh,numInd,numSnps,numheadrows,numheadcols,granularity,maxprocesses,OUTPUT_FOLDER,nodecount,step1,xstart,xstop,ystart,ystop);
-	for(int x = 0; x < granularity; ++x){
-		for(int y = 0; y < granularity; ++y){
+	//fprintf(stdout,"mproc in %s out %s thresh %f ind %d snps %d headrows %d columns %d gran %d maxprocs %d out %s count %d step %d x1 %d x2 %d y1 %d y2 %d\n",argv[1],argv[2],thresh,numInd,numSnps,numheadrows,numheadcols,granularity,maxprocesses,OUTPUT_FOLDER,nodecount,step1,xstart,xstop,ystart,ystop);
+	for(int x = 1; x <= granularity; ++x){
+		for(int y = 1; y <= granularity; ++y){
 			int x1val;
 			int x2val;
 			int y1val;
 			int y2val;
-			if(x == granularity - 1){
-				x1val = x * step2 + xstart;
+			if(x == granularity){
+				x1val = (x-1) * step2 + xstart;
 				x2val = xstop;
 			} else {
-				x1val = x * step2 + xstart;
-				x2val = (x + 1) * step2 + xstart;
+				x1val = (x-1) * step2 + xstart;
+				x2val = x * step2 + xstart - 1;
 			}
-			if(y == granularity - 1){
-				y1val = y * step2 + ystart;
+			if(y == granularity){
+				y1val = (y-1) * step2 + ystart;
 				y2val = ystop;
 			} else {
-				y1val = y * step2 + ystart;
-				y2val = (y + 1) * step2 + ystart;
+				y1val = (y-1) * step2 + ystart;
+				y2val = y * step2 + ystart - 1;
 			}
 			if(x1val > y1val){
 				continue;
@@ -586,7 +587,7 @@ int main(int argc, char ** argv)
 		}
 	}
 	//for(int x = 0; x < x1.size(); ++x){
-	//	fprintf(stdout,"x1 %d x2 %d y1 %d y2 %d\n",x1[x],x2[x],y1[x],y2[x]);
+	//	fprintf(stdout,"mproc x1 %d x2 %d y1 %d y2 %d\n",x1[x],x2[x],y1[x],y2[x]);
 	//}
 	char arg0[20];
 	char arg1[20];

@@ -35,7 +35,15 @@ int main(int argc, char ** argv)
 	fprintf(stderr,"error - could not allocate string\n");
 	exit(1);
   }
-  snprintf(checkfileName,100,"%s",argv[10]);
+  snprintf(checkfileName,100,"%s_%d",argv[10],getpid());
+  //snprintf(checkfileName,100,"%s",argv[10]);
+        FILE * checksum = fopen(checkfileName,"w");
+        if(checksum==NULL){
+                fprintf(stderr,"error - could not create checksum file\n");
+                exit(1);
+        }
+        fprintf(checksum,"%d",0);
+        fclose(checksum);
   int x1 = atoi(argv[11]) - 1;
   int x2 = atoi(argv[12]) - 1;
   int y1 = atoi(argv[13]) - 1;
@@ -53,10 +61,10 @@ int main(int argc, char ** argv)
   //sprintf(logfileName,"%s",argv[12]);
 
   getShm();
-  if(semInit(SEMNAME,MAXSEMS) == -1){
+  /*if(semInit(SEMNAME,MAXSEMS) == -1){
 	fprintf(stderr,"error - could not initialize semaphore\n");
 	exit(1);
-  }
+  }*/
 
   //FILE *logfile; // log file that records screen output
 
@@ -82,15 +90,18 @@ int main(int argc, char ** argv)
   thresh = thresh / 4.5; // divide by 4.5 to get R_ij * ff_i * ff_j value
 
   // tally pairwise correlations
-  for (int i = x1; i < x2; i++){ // start with each SNP in first set
-    for (int j = y1; j < y2; j++){  // pair with each SNP in second set
-      if(j <= i){//change to <
+  for (int i = x1; i <= x2; i++){ // start with each SNP in first set
+    for (int j = y1; j <= y2; j++){  // pair with each SNP in second set
+      if(i >= j){
          continue;
       }
+      /*if(j <= i){//change to <
+         continue;
+      }*/
       ++comparisons;
       //fprintf(stdout,"helper %d x1 %d x2 %d y1 %d y2 %d i %d j %d comparisons %d\n",getpid(),x1,x2,y1,y2,i,j,comparisons);
-	continue;
-	fprintf(stdout,"did not continue\n");
+	//continue;
+	//fprintf(stdout,"did not continue\n");
 
 
       //if (start1+i < start2+j) { // only compute upper diagonal of matrix
@@ -349,7 +360,7 @@ int main(int argc, char ** argv)
   //fprintf(stdout,"helper %d x1 %d x2 %d y1 %d y2 %d\n",getpid(),x1,x2,y1,y2);
 
   if(comparisons > 0){
-  	if(semWait()==1){
+  	//if(semWait()==1){
 		// update comparisons
 		FILE * read;
 		if((read = fopen(checkfileName, "r")) == NULL){
@@ -358,9 +369,9 @@ int main(int argc, char ** argv)
 			exit(1);
 		}
 		unsigned long long int comps = 0;
-		fscanf(read,"%llu",&comps);
+		//fscanf(read,"%llu",&comps);
 		comps += comparisons;
-		fclose(read);
+		//fclose(read);
 		FILE * write;
 		if((write = fopen(checkfileName, "w"))==NULL){
 			fprintf(stderr,"error - could not write to checksum file\n");
@@ -369,11 +380,11 @@ int main(int argc, char ** argv)
 		}
 		fprintf(write,"%llu",comps);
 		fclose(write);
-		if(semSignal() == -1){
-			fprintf(stderr,"error - could not signal semaphore\n");
-			exit(1);
-		}
-  	}
+		//if(semSignal() == -1){
+			//fprintf(stderr,"error - could not signal semaphore\n");
+			//exit(1);
+		//}
+  	//}
   }
 
   free(OUTPUT_FOLDER);
