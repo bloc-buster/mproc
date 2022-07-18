@@ -87,6 +87,8 @@ command srun make mproc
 sleep 1
 command srun make helper
 sleep 1
+command srun make ccc
+sleep 1
 let status=$?
 if [ "$status" != "0" ]
 then

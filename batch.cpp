@@ -125,8 +125,8 @@ int main(int argc,char ** argv){
 	int g2 = 7;
 	if(argc >= 10){
 		g2 = atoi(argv[9]);
-		if(g2 < 1){
-			printf("error - granularity < 1\n");
+		if(g2 < 0){
+			printf("error - granularity < 0\n");
 			exit(1);
 		}
 		if(g1 > 1 && g2 > 7){

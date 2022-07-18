@@ -70,7 +70,17 @@ shift
 
 #echo "ccc.sh running mproc with granularity $granularity2 procs $maxprocesses count $count step $step xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
 
-srun ./mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop
+if [[ $granularity2 -gt 0 ]]
+then
+   srun ./mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop
+else
+   outputfile=${outputfile%.gml}
+   outputfile+=$count
+   outputfile+=".gml"
+   echo $outputfile
+   srun ./ccc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
+fi
+
 let status=$?
 if [ "$status" != "0" ]
 then

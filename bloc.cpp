@@ -22,8 +22,8 @@ void checkConstants(); // check validity of constants in bloc.h
 
 int main(int argc, char ** argv)
 {
-  if (argc != 8)
-    fatal("Usage:\n\n   ccc input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols\n\n");  
+  if (argc != 8 && argc != 12)
+    fatal("Usage:\n\n   ccc input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols (optional x1 x2 y1 y2)\n\n");  
 
   timer t;
   t.start("Timer started.");
