@@ -534,13 +534,13 @@ int main(int argc, char ** argv)
 	char checkfileName[100];
 	//sprintf(checkfileName,"%s/checksum",OUTPUT_FOLDER);
 	sprintf(checkfileName,"%s/checksum_%d",OUTPUT_FOLDER,nodecount);
-	/*FILE * checksum = fopen(checkfileName,"w");
+	FILE * checksum = fopen(checkfileName,"w");
 	if(checksum==NULL){
 		fprintf(stderr,"error - could not create checksum file\n");
 		exit(1);
 	}
 	fprintf(checksum,"%d",0);
-	fclose(checksum);*/
+	fclose(checksum);
 	int step1 = atoi(argv[12]);
 	int step2 = (int)((float)step1 / (float)granularity);
 	if(step2 < 1){
@@ -555,7 +555,6 @@ int main(int argc, char ** argv)
 	vector<int> x2;
 	vector<int> y1;
 	vector<int> y2;
-//srun ./mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop
 	//fprintf(stdout,"mproc in %s out %s thresh %f ind %d snps %d headrows %d columns %d gran %d maxprocs %d out %s count %d step %d x1 %d x2 %d y1 %d y2 %d\n",argv[1],argv[2],thresh,numInd,numSnps,numheadrows,numheadcols,granularity,maxprocesses,OUTPUT_FOLDER,nodecount,step1,xstart,xstop,ystart,ystop);
 	for(int x = 1; x <= granularity; ++x){
 		for(int y = 1; y <= granularity; ++y){

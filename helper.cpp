@@ -9,6 +9,7 @@
 #include "bloc.h"
 #include "shmem.h"
 #include "sem.h"
+#include "params.h"
 
 using namespace std;
 
@@ -35,15 +36,19 @@ int main(int argc, char ** argv)
 	fprintf(stderr,"error - could not allocate string\n");
 	exit(1);
   }
-  snprintf(checkfileName,100,"%s_%d",argv[10],getpid());
-  //snprintf(checkfileName,100,"%s",argv[10]);
-        FILE * checksum = fopen(checkfileName,"w");
-        if(checksum==NULL){
-                fprintf(stderr,"error - could not create checksum file\n");
-                exit(1);
-        }
-        fprintf(checksum,"%d",0);
-        fclose(checksum);
+  if(semaphores==1){
+    snprintf(checkfileName,100,"%s",argv[10]);
+    //fprintf(stdout,"helper using semaphores\n");
+  } else {
+    snprintf(checkfileName,100,"%s_%d",argv[10],getpid());
+    FILE * checksum = fopen(checkfileName,"w");
+    if(checksum==NULL){
+            fprintf(stderr,"error - could not create checksum file\n");
+            exit(1);
+    }
+    //fprintf(checksum,"%d",0);
+    fclose(checksum);
+  }
   int x1 = atoi(argv[11]) - 1;
   int x2 = atoi(argv[12]) - 1;
   int y1 = atoi(argv[13]) - 1;
@@ -61,10 +66,10 @@ int main(int argc, char ** argv)
   //sprintf(logfileName,"%s",argv[12]);
 
   getShm();
-  /*if(semInit(SEMNAME,MAXSEMS) == -1){
+  if(semInit(SEMNAME,MAXSEMS) == -1){
 	fprintf(stderr,"error - could not initialize semaphore\n");
 	exit(1);
-  }*/
+  }
 
   //FILE *logfile; // log file that records screen output
 
@@ -360,18 +365,20 @@ int main(int argc, char ** argv)
   //fprintf(stdout,"helper %d x1 %d x2 %d y1 %d y2 %d\n",getpid(),x1,x2,y1,y2);
 
   if(comparisons > 0){
-  	//if(semWait()==1){
+  	if(semaphores==0 || semWait()==1){
 		// update comparisons
-		FILE * read;
-		if((read = fopen(checkfileName, "r")) == NULL){
+		unsigned long long int comps = 0;
+		if(semaphores==1){
+		   FILE * read;
+		   if((read = fopen(checkfileName, "r")) == NULL){
 			fprintf(stderr,"error - checksum file could not be opened\n");
 			//semSignal();
 			exit(1);
+		   }
+		   fscanf(read,"%llu",&comps);
+		   fclose(read);
 		}
-		unsigned long long int comps = 0;
-		//fscanf(read,"%llu",&comps);
 		comps += comparisons;
-		//fclose(read);
 		FILE * write;
 		if((write = fopen(checkfileName, "w"))==NULL){
 			fprintf(stderr,"error - could not write to checksum file\n");
@@ -380,11 +387,11 @@ int main(int argc, char ** argv)
 		}
 		fprintf(write,"%llu",comps);
 		fclose(write);
-		//if(semSignal() == -1){
-			//fprintf(stderr,"error - could not signal semaphore\n");
-			//exit(1);
-		//}
-  	//}
+		if(semaphores==1 && semSignal() == -1){
+			fprintf(stderr,"error - could not signal semaphore\n");
+			exit(1);
+		}
+  	}
   }
 
   free(OUTPUT_FOLDER);

@@ -71,8 +71,14 @@ then
 	outputfolder=$1
 	shift
 fi
+let semaphores=0
+if [ $numargs -ge 12 ]
+then
+	semaphores=$1
+	shift
+fi
 
-params="#define num_ind $numind\n#define num_snps1 $numsnps\n#define num_snps2 $numsnps\n#define gml_file \"$outputfile\"\n#define temp_folder \"$outputfolder\""
+params="#define num_ind $numind\n#define num_snps1 $numsnps\n#define num_snps2 $numsnps\n#define gml_file \"$outputfile\"\n#define temp_folder \"$outputfolder\"\n#define semaphores $semaphores"
 command echo -e $params > params.h
 sleep 1
 command srun make clean

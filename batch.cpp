@@ -70,9 +70,9 @@ int main(int argc,char ** argv){
                 sprintf(command,"./batch.sh %s %s %d %d",outputfolder,outputfile,numind,numsnps);
                 system(command);
                 return 0;
-	} else if(argc < 8 || argc > 12){
+	} else if(argc < 8 || argc > 13){
 		printf("\nusage\n");
-		printf("\nprepare files: ./batch input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) output_folder (default temp_output_files)\n");
+		printf("\nprepare files: ./batch input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) output_folder (default temp_output_files) semaphores (0 or 1 default 0)\n");
 		printf("\n(wait until jobs complete)\n");
 		printf("\ncombine files: ./batch -z\n\n");
 		exit(1);
@@ -146,8 +146,16 @@ int main(int argc,char ** argv){
 	if(argc >= 12){
 		outputfolder = argv[11];
 	}
+	int semaphores = 0;
+	if(argc >= 13){
+		semaphores = atoi(argv[12]);
+		if(semaphores != 1 && semaphores != 0){
+			printf("error - semaphores must be equal to 0 or 1\n");
+			exit(1);
+		}
+	}
 	char command[150];
-	sprintf(command,"srun batch.sh %s %s %f %d %d %d %d %d %d %d %s",input,output,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder);
+	sprintf(command,"srun batch.sh %s %s %f %d %d %d %d %d %d %d %s %d",input,output,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
 	system(command);
 	return 0;
 }
