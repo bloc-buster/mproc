@@ -19,8 +19,8 @@ using namespace std;
 
 int main(int argc,char ** argv){
 	int ch;
-	while((ch=getopt(argc,argv,"z")) != -1){
-		if(ch=='z'){
+	while((ch=getopt(argc,argv,"zc")) != -1){
+		if(ch=='z' || ch=='c'){
 			FILE * file = fopen("./params.h","r");
 			if(file==NULL){
 				printf("error - could not read params file\n");
@@ -28,13 +28,18 @@ int main(int argc,char ** argv){
 			}
 			char buffer[200];
 			char * token;
-			bool keepgoing = true;
-			while(keepgoing==true && fgets(buffer,1000,file) != NULL){
+			char * gmlfile;
+			char * tempfolder;
+			while(fgets(buffer,1000,file) != NULL){
 				token = strtok(buffer," ");
 				while(token != NULL){
 					if(strcmp(token,"gml_file")==0){
 						token = strtok(NULL," ");
-						keepgoing = false;
+						gmlfile = strdup(token);
+						break;
+					} else if(strcmp(token,"temp_folder")==0){
+						token = strtok(NULL," ");
+						tempfolder = strdup(token);
 						break;
 					}
 					token = strtok(NULL," ");
@@ -42,7 +47,14 @@ int main(int argc,char ** argv){
 			}
 			fclose(file);
 			char command[150];
-			sprintf(command,"./batch.sh %s", token);
+			if(ch=='z'){
+				sprintf(command,"./batch.sh %s", strtok(gmlfile,"\n"));
+			} else if(ch=='c'){
+				sprintf(command,"./ccc.sh %s %s", strtok(tempfolder,"\n"), strtok(gmlfile,"\n"));
+			} else {
+				fprintf(stderr,"error - unknown option\n");
+				exit(1);
+			}
 			system(command);
 			return 0;
 		}
