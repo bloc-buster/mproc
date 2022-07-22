@@ -30,6 +30,7 @@ int main(int argc,char ** argv){
 			char * token;
 			char * gmlfile;
 			char * tempfolder;
+			char * granularity2;
 			while(fgets(buffer,1000,file) != NULL){
 				token = strtok(buffer," ");
 				while(token != NULL){
@@ -41,6 +42,10 @@ int main(int argc,char ** argv){
 						token = strtok(NULL," ");
 						tempfolder = strdup(token);
 						break;
+					} else if(strcmp(token,"granularity2")==0){
+						token = strtok(NULL," ");
+						granularity2 = strdup(token);
+						break;
 					}
 					token = strtok(NULL," ");
 				}
@@ -48,7 +53,11 @@ int main(int argc,char ** argv){
 			fclose(file);
 			char command[150];
 			if(ch=='z'){
-				sprintf(command,"./batch.sh %s", strtok(gmlfile,"\n"));
+				if(atoi(granularity2) > 0){
+					sprintf(command,"./batch.sh %s", strtok(gmlfile,"\n"));
+				} else {
+					sprintf(command,"./ccc.sh %s %s", strtok(tempfolder,"\n"), strtok(gmlfile,"\n"));
+				}
 			} else if(ch=='c'){
 				sprintf(command,"./ccc.sh %s %s", strtok(tempfolder,"\n"), strtok(gmlfile,"\n"));
 			} else {

@@ -78,7 +78,7 @@ then
 	shift
 fi
 
-params="#define num_ind $numind\n#define num_snps1 $numsnps\n#define num_snps2 $numsnps\n#define gml_file \"$outputfile\"\n#define temp_folder \"$outputfolder\"\n#define semaphores $semaphores\n"
+params="#define num_ind $numind\n#define num_snps1 $numsnps\n#define num_snps2 $numsnps\n#define gml_file \"$outputfile\"\n#define temp_folder \"$outputfolder\"\n#define semaphores $semaphores\n#define granularity2 $granularity2\n"
 command echo -e $params > params.h
 sleep 1
 command srun make clean
