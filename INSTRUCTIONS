@@ -12,10 +12,13 @@ requirements:
 required files:
 	ccc
 	helper
+	mproc
 	batch
 	batch.cpp (invokes batch.sh)
-	batch.sh (invokes ccc.sh or ccc)
+	batch.sh (invokes ccc.sh, mproc, or ccc)
 	ccc.sh (invokes ccc)
+	mproc.sh
+	mproc.cpp
 	bloc.cpp
 	helper.cpp
 	sem.h
@@ -26,17 +29,20 @@ required files:
 	checksum.txt (generated programmatically)
 	data.key (generated programmatically)
 	Makefile
+project structure:
+	Since the number of executable files is large, the project is stored in the resources folder and must be run from that folder. However, we recommend that all output be stored outside of the resources folder. Hence, the default output folder for temporary files has a relative path that leads out of the resources folder: ../temp_output_files. We suggest that all other paths should be specified with absolute addressing, and that results should be sent to the results folder which is outside of the resources folder.
+	For clarification, the start file must be run from inside the resources folder, but we suggest that all output files be stored outside of the resources folder. Hence, to run the project, you should cd into the resources folder and type ./batch with a list of arguments, wait for it to complete, then conclude with ./batch -z. Then, to retrieve output, you should cd out of the resources folder and into the results folder.
 
 configure:
-	overwrite ccc.sh with appropriate sbatch parameters, then comment out the warning and the exit statement
+	overwrite mproc.sh and ccc.sh with appropriate sbatch parameters, then comment out the warning and the exit statement
 		the program will not run until you comment out the warning and the exit statement
 	bloc.h has been set for SNPs as rows
-		if you need SNPs as columns, change setting in bloc.h
+	if you need SNPs as columns, change setting in bloc.h
 
-compile:
+compile (from within resources folder):
 	srun make clean
 	srun make
-	(on each run, batch.sh recompiles since it must rewrite params.h)
+	(on each run, batch.sh recompiles several files since it must rewrite params.h)
 
 run:
 	the program requires two runs
@@ -45,8 +51,8 @@ run:
 	first, run batch with srun batch or just ./batch
 		batch has required parameters
 		batch then invokes batch.sh
-		batch.sh then invokes sbatch on ccc.sh
-		ccc.sh then invokes ccc with srun
+		batch.sh then invokes sbatch on mproc.sh
+		mproc.sh then invokes mproc with srun
 		the .sh files generate no new .sh files...instead, a single .sh file is reused with varying parameters
 	wait for all jobs to complete
 	then, run batch with -z and no parameters, or four parameters if you launched multiple jobs
@@ -67,10 +73,9 @@ usage:
 	./batch input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) output_folder (default temp_output_files) semaphores (default 0) 
 		explanation - the outputfolder is not for the output.gml file, it's a temporary folder that gets erased after the -z or four parameter option
 	(combine files)
-	./batch -z (or -c)
+	./batch -z
 		explanation - program does not know when all jobs have finished...after all jobs complete, tell program to join partial files from output folder into a gml file
 		-z - if the first run had two granularity values
-		-c - if the first run had just one granularity value and the second was zero
 	(or, for multiple simultaneous runs)
 	./batch outputfolder outputfile num_ind num_snps
 		explanation - the -z option reads the params.h file, but if you launch multiple jobs they overwrite that file so instead you must tell it the parameters
@@ -97,18 +102,18 @@ output files:
 	SLURM output files
 
 example run:
-	./batch acgt.txt data/out.gml 0.7 10 1000 1 11 1 7 15 data/temp_output_files
+	./batch /home/username/data/acgt.txt /home/username/data/out.gml 0.7 10 1000 1 11 1 7 15 /home/username/data/temp_output_files
 	(wait until all jobs have completed, then generate gml file)
 	./batch -z
 
 multiple simultaneous runs:
-	./batch file1.txt data/out1.gml 0.7 100 1000 1 11 1 7 15 data/temp_output_files1
+	./batch /home/username/data/file1.txt /home/username/data/out1.gml 0.7 100 1000 1 11 1 7 15 /home/username/data/temp_output_files1
 	(wait until job 1 starts running)
-	./batch file2.txt data/out2.gml 0.7 100 1000 1 11 1 7 15 data/temp_output_files2
+	./batch /home/username/data/file2.txt /home/username/data/out2.gml 0.7 100 1000 1 11 1 7 15 /home/usernamedata/temp_output_files2
 	(wait until job 1 has completed)
-	./batch data/temp_output_files1 data/out1.gml 100 1000
+	./batch /home/username/data/temp_output_files1 /home/username/data/out1.gml 100 1000
 	(wait until job 2 has completed)
-	./batch data/temp_output_files2 data/out2.gml 100 1000
+	./batch /home/username/data/temp_output_files2 /home/username/data/out2.gml 100 1000
 
 checking results:
 	after invoking -z, or the four parameter option, read the resulting SLURM output file

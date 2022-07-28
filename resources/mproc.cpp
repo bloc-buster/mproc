@@ -38,7 +38,7 @@ void format(char*, char**, char**, char**, double**, double**, int, int, int, in
 void checkConstants(); // check validity of constants in bloc.h
 
 /****/
-char * OUTPUT_FOLDER = (char *)"temp_output_files";
+char * OUTPUT_FOLDER = (char *)"../temp_output_files";
 /*****************/
 
 

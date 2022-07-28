@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "batch.sh"
+exit 0
+
 if [[ "$#" -eq 1 ]]
 then
 	slurmoutfile=$1
@@ -65,7 +68,7 @@ then
 	let maxprocesses=$1
 	shift
 fi
-outputfolder="temp_output_files"
+outputfolder="../temp_output_files"
 if [ $numargs -ge 11 ]
 then
 	outputfolder=$1

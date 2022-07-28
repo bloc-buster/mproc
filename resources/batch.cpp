@@ -163,7 +163,7 @@ int main(int argc,char ** argv){
 			exit(1);
 		}
 	}
-	char * outputfolder = (char *)"./temp_output_files\0";
+	char * outputfolder = (char *)"../temp_output_files\0";
 	if(argc >= 12){
 		outputfolder = argv[11];
 	}
@@ -176,7 +176,7 @@ int main(int argc,char ** argv){
 		}
 	}
 	char command[150];
-	sprintf(command,"srun batch.sh %s %s %f %d %d %d %d %d %d %d %s %d",input,output,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
+	sprintf(command,"srun ./batch.sh %s %s %f %d %d %d %d %d %d %d %s %d",input,output,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
 	system(command);
 	return 0;
 }
