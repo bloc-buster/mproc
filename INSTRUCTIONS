@@ -7,7 +7,7 @@ requirements:
 	make
 	Linux
 	SLURM
-	overwrite ccc.sh with sbatch parameters relevant to your system
+	overwrite mproc.sh and ccc.sh with sbatch parameters relevant to your system
 
 required files:
 	ccc

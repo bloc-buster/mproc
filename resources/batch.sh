@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "batch.sh"
-exit 0
 
 if [[ "$#" -eq 1 ]]
 then
