@@ -31,15 +31,15 @@ required files:
 	Makefile
 
 project structure:
-	Since the number of executable files is large, the project is stored in the resources folder and must be run from that folder. However, we recommend that all output be stored outside of the resources folder. Hence, the default output folder for temporary files has a relative path that leads out of the resources folder: ../temp_output_files. We suggest that all other paths should be specified with absolute addressing, and that results should be sent to the results folder which is outside of the resources folder.
-	For clarification, the start file must be run from inside the resources folder, but we suggest that all output files be stored outside of the resources folder. Hence, to run the project, you should cd into the resources folder and type ./batch with a list of arguments, wait for it to complete, then conclude with ./batch -z. Then, to retrieve output, you should cd out of the resources folder and into the results folder.
+	Since the number of executable files is large, the project is stored in the resources folder and must be run from that folder. However, we recommend that all output be stored outside of the resources folder. Hence, the default output folder for temporary files has a relative path that leads out of the resources folder: ../temp_output_files. We suggest that all other paths should be specified with absolute addressing, and that results should be sent to the out folder which is outside of the resources folder.
+	For clarification, the start file must be run from inside the resources folder, but we suggest that all output files be stored outside of the resources folder. Hence, to run the project, you should cd into the resources folder and type ./batch with a list of arguments, wait for it to complete, then conclude with ./batch -z. Then, to retrieve output, you should cd out of the resources folder and into the out folder.
 
 suggested file structure:
 	project folder (name of your choice)
 		resources (folder)
 			all required executable files should be stored here
 		INSTRUCTIONS (text file)
-		results (empty folder)
+		out (empty folder)
 		temp_output_files (empty folder made automatically)
 
 configure:

@@ -42,11 +42,6 @@ let granularity1=1
 if [ $numargs -ge 8 ]
 then
 	let granularity1=$1
-	if [[ $granularity1 -gt 7 ]]
-	then
-		echo "granularity too high, no higher than 7"
-		exit 0
-	fi
 	shift
 fi
 let granularity2=7
@@ -54,6 +49,11 @@ if [ $numargs -ge 9 ]
 then
 	let granularity2=$1
 	if [[ $granularity1 -gt 1 && $granularity2 -gt 7 ]]
+	then
+		echo "granularity too high, no higher than 7"
+		exit 0
+	fi
+	if [[ $granularity1 -gt 7 && $granularity2 -gt 0 ]]
 	then
 		echo "granularity too high, no higher than 7"
 		exit 0

@@ -138,10 +138,6 @@ int main(int argc,char ** argv){
 			printf("error - granularity < 1\n");
 			exit(1);
 		}
-		if(g1 > 7){
-			printf("error - first granularity greater than 7 not recommended\n");
-			exit(1);
-		}
 	}
 	int g2 = 7;
 	if(argc >= 10){
@@ -152,6 +148,10 @@ int main(int argc,char ** argv){
 		}
 		if(g1 > 1 && g2 > 7){
 			printf("error - granularities larger than 7 may result in excessive processes generated\n");
+			exit(1);
+		}
+		if(g1 > 7 && g2 > 0){
+			printf("error - first granularity greater than 7 not recommended\n");
 			exit(1);
 		}
 	}

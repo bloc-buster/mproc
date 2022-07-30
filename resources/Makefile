@@ -1,7 +1,7 @@
 CC = g++ 
 CFLAGS = -g -lpthread -lm
 
-all: mproc helper batch
+all: mproc helper batch ccc
 mproc: mproc.cpp
 	$(CC) $^ -o $@ $(CFLAGS)
 helper: helper.cpp

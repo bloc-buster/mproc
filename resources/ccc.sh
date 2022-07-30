@@ -42,6 +42,7 @@ then
 		echo -e "$text" >> $gmlfile
 	done
 	echo "]" >> $gmlfile
+	command rm -rf $tempfolder
 	exit 0
 elif [[ "$#" -ne 13 ]]
 then

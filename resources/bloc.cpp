@@ -631,7 +631,7 @@ int main(int argc, char ** argv)
 
   fclose(logfile);
 
-  return 1;
+  return 0;
 }
 
 

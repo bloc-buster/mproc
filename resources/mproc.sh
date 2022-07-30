@@ -2,9 +2,8 @@
 
 #SBATCH -p Lewis 
 #SBATCH -N 1
-#SBATCH -c 24
-#SBATCH --exclusive
-#SBATCH --mem 0G
+#SBATCH -c 15
+#SBATCH --mem 32G
 #SBATCH --time=0-01:00:00
 #SBATCH --account=climerlab
 
