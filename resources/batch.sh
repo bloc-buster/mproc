@@ -1,19 +1,13 @@
 #!/bin/bash
 
+echo "BATCH.SH"
+
 
 if [[ "$#" -eq 1 ]]
 then
 	slurmoutfile=$1
 	command sbatch --output="$slurmoutfile-%j.out" ./mproc.sh "true" 
 	exit 0
-elif [[ "$#" -eq 4 ]]
-then
-        outputfolder=$1
-        outputfile=$2
-        let numind=$3
-        let numsnps=$4
-        command sbatch --output="$outputfile-%j.out" ./mproc.sh $outputfolder $outputfile $numind $numsnps
-        exit 0
 elif [[ "$#" -lt 7 || "$#" -gt 12 ]]
 then
 	echo "$#"
@@ -66,7 +60,7 @@ then
 	let maxprocesses=$1
 	shift
 fi
-outputfolder="../temp_output_files"
+#outputfolder="../temp_output_files"
 if [ $numargs -ge 11 ]
 then
 	outputfolder=$1
@@ -157,10 +151,12 @@ for (( x = 0; x < ${#x_start[@]}; x += 1 ))
 do
 	if [[ $granularity2 -gt 0 ]]
 	then
-		#echo "batch.sh running mproc.sh with granularity $granularity2 step $step count $count x-start ${x_start[$x]} x-stop ${x_stop[$x]} y-start ${y_start[$x]} y-stop ${y_stop[$x]}"
-		command sbatch --output=$slurmoutfile ./mproc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}
+		echo "batch.sh running mproc.sh with granularity $granularity2 step $step count $count x-start ${x_start[$x]} x-stop ${x_stop[$x]} y-start ${y_start[$x]} y-stop ${y_stop[$x]}"
+		echo "$slurmoutfile $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}"
+		#command sbatch --output=$slurmoutfile ./mproc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}
 	else
-		command sbatch --output=$slurmoutfile ./ccc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $outputfolder $count ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}
+		continue
+		#command sbatch --output=$slurmoutfile ./ccc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $outputfolder $count ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}
 	fi
 	let count+=1
 done

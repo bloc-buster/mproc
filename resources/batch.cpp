@@ -98,8 +98,6 @@ int main(int argc,char ** argv){
 		fprintf(stderr,"error - outputfile must be a file name, not a file path\n");
 		exit(1);
 	}
-	char outputfile[strlen(filestem) + strlen(output) + 1];
-	sprintf(outputfile,"%s%s\0",filestem,output);
 	float thresh = atof(argv[3]);
 	if(thresh <= 0 || thresh > 1){
 		printf("error - threshold must be between 0 and 1\n");
@@ -166,7 +164,9 @@ int main(int argc,char ** argv){
 		}
 	}
 	char outputfolder[strlen(filestem) + strlen(log_folder) + 1];
-	sprintf(outputfolder,"%s%s\0",filestem,log_folder);
+	sprintf(outputfolder,"%s%s/\0",filestem,log_folder);
+	char outputfile[strlen(outputfolder) + strlen(output) + 1];
+	sprintf(outputfile,"%s%s\0",outputfolder,output);
 	int semaphores = 0;
 	if(argc >= 13){
 		semaphores = atoi(argv[12]);
