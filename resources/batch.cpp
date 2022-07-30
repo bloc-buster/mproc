@@ -19,8 +19,8 @@ using namespace std;
 
 int main(int argc,char ** argv){
 	int ch;
-	while((ch=getopt(argc,argv,"zc")) != -1){
-		if(ch=='z' || ch=='c'){
+	while((ch=getopt(argc,argv,"z")) != -1){
+		if(ch=='z'){
 			FILE * file = fopen("./params.h","r");
 			if(file==NULL){
 				printf("error - could not read params file\n");
@@ -58,8 +58,6 @@ int main(int argc,char ** argv){
 				} else {
 					sprintf(command,"./ccc.sh %s %s", strtok(tempfolder,"\n"), strtok(gmlfile,"\n"));
 				}
-			} else if(ch=='c'){
-				sprintf(command,"./ccc.sh %s %s", strtok(tempfolder,"\n"), strtok(gmlfile,"\n"));
 			} else {
 				fprintf(stderr,"error - unknown option\n");
 				exit(1);
@@ -68,30 +66,7 @@ int main(int argc,char ** argv){
 			return 0;
 		}
 	}
-        if(argc==5){
-                char * outputfolder = argv[1];
-                DIR * d = opendir(outputfolder);
-                if(d==NULL){
-                        printf("error - could not open output folder\n");
-                        exit(1);
-                }
-                closedir(d);
-                char * outputfile = argv[2];
-                int numind = atoi(argv[3]);
-                if(numind < 1){
-                        printf("error - samples < 1\n");
-                        exit(1);
-                }
-                int numsnps = atoi(argv[4]);
-                if(numsnps < 1){
-                        printf("error - snps < 1\n");
-                        exit(1);
-                }
-                char command[150];
-                sprintf(command,"./batch.sh %s %s %d %d",outputfolder,outputfile,numind,numsnps);
-                system(command);
-                return 0;
-	} else if(argc < 8 || argc > 13){
+	if(argc < 8 || argc > 13){
 		printf("\nusage\n");
 		printf("\nprepare files: ./batch input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) output_folder (default temp_output_files) semaphores (0 or 1 default 0)\n");
 		printf("\n(wait until jobs complete)\n");
@@ -105,7 +80,26 @@ int main(int argc,char ** argv){
 		exit(1);
 	}
 	fclose(fptr);
+  	char filestem[100];
+        for (int i = strlen(input) - 1; i >= 0; i--) {
+             if (input[i] == '/') {
+		strncpy(filestem,input,i+1);
+		filestem[i+1] = '\0';
+                break;
+             }
+	}
 	char * output = argv[2];
+	char * substr = strstr(output,".gml");
+	if(substr==NULL || strcmp(substr,".gml") != 0){
+		fprintf(stderr,"error - output file must end with .gml\n");
+		exit(1);
+	}
+	if(strstr(output,"/") != NULL){
+		fprintf(stderr,"error - outputfile must be a file name, not a file path\n");
+		exit(1);
+	}
+	char outputfile[strlen(filestem) + strlen(output) + 1];
+	sprintf(outputfile,"%s%s\0",filestem,output);
 	float thresh = atof(argv[3]);
 	if(thresh <= 0 || thresh > 1){
 		printf("error - threshold must be between 0 and 1\n");
@@ -163,10 +157,16 @@ int main(int argc,char ** argv){
 			exit(1);
 		}
 	}
-	char * outputfolder = (char *)"../temp_output_files\0";
+	char * log_folder = "log_files";
 	if(argc >= 12){
-		outputfolder = argv[11];
+		log_folder = argv[11];
+		if(strstr(log_folder,"/") != NULL){
+			fprintf(stderr,"error - temp output folder must be a folder name, not a folder path\n");
+			exit(1);
+		}
 	}
+	char outputfolder[strlen(filestem) + strlen(log_folder) + 1];
+	sprintf(outputfolder,"%s%s\0",filestem,log_folder);
 	int semaphores = 0;
 	if(argc >= 13){
 		semaphores = atoi(argv[12]);
@@ -176,7 +176,7 @@ int main(int argc,char ** argv){
 		}
 	}
 	char command[150];
-	sprintf(command,"srun ./batch.sh %s %s %f %d %d %d %d %d %d %d %s %d",input,output,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
+	sprintf(command,"srun ./batch.sh %s %s %f %d %d %d %d %d %d %d %s %d",input,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
 	system(command);
 	return 0;
 }
