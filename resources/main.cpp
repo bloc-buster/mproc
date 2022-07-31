@@ -54,7 +54,7 @@ int main(int argc,char ** argv){
 			char command[150];
 			if(ch=='z'){
 				if(atoi(granularity2) > 0){
-					sprintf(command,"./batch.sh %s", strtok(gmlfile,"\n"));
+					sprintf(command,"./main.sh %s %s", strtok(tempfolder,"\n"));
 				} else {
 					sprintf(command,"./ccc.sh %s %s", strtok(tempfolder,"\n"), strtok(gmlfile,"\n"));
 				}
@@ -68,9 +68,9 @@ int main(int argc,char ** argv){
 	}
 	if(argc < 8 || argc > 13){
 		printf("\nusage\n");
-		printf("\nprepare files: ./batch input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) output_folder (default temp_output_files) semaphores (0 or 1 default 0)\n");
+		printf("\nprepare files: ./main input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) output_folder (default temp_output_files) semaphores (0 or 1 default 0)\n");
 		printf("\n(wait until jobs complete)\n");
-		printf("\ncombine files: ./batch -z\n\n");
+		printf("\ncombine files: ./main -z\n\n");
 		exit(1);
 	}
 	char * input = argv[1];
@@ -88,6 +88,10 @@ int main(int argc,char ** argv){
                 break;
              }
 	}
+	if(strlen(filestem)==0){ // did not find /
+		fprintf(stderr,"error - please place input file in a different folder\n");
+		exit(1);
+	}
 	char * output = argv[2];
 	char * substr = strstr(output,".gml");
 	if(substr==NULL || strcmp(substr,".gml") != 0){
@@ -98,6 +102,8 @@ int main(int argc,char ** argv){
 		fprintf(stderr,"error - outputfile must be a file name, not a file path\n");
 		exit(1);
 	}
+	char outputfile[strlen(filestem) + strlen(output) + 1];
+	sprintf(outputfile,"%s%s\0",filestem,output);
 	float thresh = atof(argv[3]);
 	if(thresh <= 0 || thresh > 1){
 		printf("error - threshold must be between 0 and 1\n");
@@ -165,8 +171,6 @@ int main(int argc,char ** argv){
 	}
 	char outputfolder[strlen(filestem) + strlen(log_folder) + 1];
 	sprintf(outputfolder,"%s%s/\0",filestem,log_folder);
-	char outputfile[strlen(outputfolder) + strlen(output) + 1];
-	sprintf(outputfile,"%s%s\0",outputfolder,output);
 	int semaphores = 0;
 	if(argc >= 13){
 		semaphores = atoi(argv[12]);
@@ -176,7 +180,7 @@ int main(int argc,char ** argv){
 		}
 	}
 	char command[150];
-	sprintf(command,"srun ./batch.sh %s %s %f %d %d %d %d %d %d %d %s %d",input,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
+	sprintf(command,"srun ./main.sh %s %s %f %d %d %d %d %d %d %d %s %d",input,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
 	system(command);
 	return 0;
 }

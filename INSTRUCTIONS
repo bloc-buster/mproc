@@ -10,12 +10,8 @@ requirements:
 	overwrite mproc.sh and ccc.sh with sbatch parameters relevant to your system
 
 required files:
-	ccc
-	helper
-	mproc
-	batch
-	batch.cpp (invokes batch.sh)
-	batch.sh (invokes ccc.sh, mproc, or ccc)
+	main.cpp (invokes main.sh)
+	main.sh (invokes ccc.sh, mproc, or ccc)
 	mproc.sh
 	mproc.cpp
 	helper.cpp
@@ -31,16 +27,14 @@ required files:
 	Makefile
 
 project structure:
-	Since the number of executable files is large, the project is stored in the resources folder and must be run from that folder. However, we recommend that all output be stored outside of the resources folder. Hence, the default output folder for temporary files has a relative path that leads out of the resources folder: ../temp_output_files. We suggest that all other paths should be specified with absolute addressing, and that results should be sent to the out folder which is outside of the resources folder.
-	For clarification, the start file must be run from inside the resources folder, but we suggest that all output files be stored outside of the resources folder. Hence, to run the project, you should cd into the resources folder and type ./batch with a list of arguments, wait for it to complete, then conclude with ./batch -z. Then, to retrieve output, you should cd out of the resources folder and into the out folder.
+	Since the number of executable files is large, the project is stored in the resources folder and must be run from that folder. However, we require that all output be stored outside of the resources folder. Hence, the location of the input folder determines the location of the output file and the log folder. The output file will be placed in the same folder as the input file, and the output folder containing log files will be placed in that folder as well.
+	For clarification, the start file must be run from inside the resources folder. Hence, to run the project, you should cd into the resources folder and type ./main with a list of arguments, wait for it to complete, then conclude with ./main -z. Then, to retrieve output, you should cd out of the resources folder and into the folder with the input file, which may be placed in a folder of your choice.
 
-suggested file structure:
+project structure:
 	project folder (name of your choice)
 		resources (folder)
-			all required executable files should be stored here
+			all required executable files are stored here
 		INSTRUCTIONS (text file)
-		out (empty folder)
-		temp_output_files (empty folder made automatically)
 
 configure:
 	overwrite mproc.sh and ccc.sh with appropriate sbatch parameters, then comment out the warning and the exit statement
@@ -51,43 +45,39 @@ configure:
 compile (from within resources folder):
 	srun make clean
 	srun make
-	(on each run, batch.sh recompiles several files since it must rewrite params.h)
+	(on each run, main.sh recompiles several files since it must rewrite params.h)
 
 run:
 	the program requires two runs
 		on the first run, the program generates partial files in the output folder
 		on the second run, the program gathers the partial files into a complete file
-	first, run batch with srun batch or just ./batch
-		batch has required parameters
-		batch then invokes batch.sh
-		batch.sh then invokes sbatch on mproc.sh
+	first, run main with srun main or just ./main
+		main has required parameters
+		main then invokes main.sh
+		main.sh then invokes sbatch on mproc.sh
 		mproc.sh then invokes mproc with srun
 		the .sh files generate no new .sh files...instead, a single .sh file is reused with varying parameters
 	wait for all jobs to complete
-	then, run batch with -z and no parameters, or four parameters if you launched multiple jobs
-		four parameters are required for multiple jobs or else they will overwrite each others' configurations
+	then, run main with -z and no parameters
 	read the SLURM output file for the most recent job to verify the checksum
-		if comparisons equals expected comparisons then the results are correct, otherwise they may be wrong
+		if comparisons equals expected comparisons then the results are correct
 
 different runs at same time:
-	not recommended - a large file should not take much longer than an hour so waiting on each run should not take long
-	however, if you want to run multiple instances at the same time, follow these instructions
-	do not use the default output folder, you must have different output file names and different output folder names
-	do not launch another job until the first job has started running
-	do not use the -z option...instead, specify four parameters
-	even if all of these instructions are followed, if multiple runs are scheduled on the same node, their semaphores might overlap, resulting in miscomputed checksum
+	not possible - you must wait until each batch completes before starting another run
+	after the first batch completes, you must perform the second run with ./main -z
+	the -z option will read the params.h file containing the starting input parameters
+	if you run main.cpp again on new files before running main -z on the first files, the params.h variables will be overwritten
+	hence, you must run the program on one batch of files at a time
+	a large file should not take much longer than an hour so waiting on each run should not take long
 
 usage:
 	(prepare files)
-	./batch input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) temp_output_folder (default ../temp_output_files) semaphores (default 0) 
-		explanation - the temp_output_folder is not for the output.gml file, it's a temporary folder that gets erased after the -z or four parameter option
+	./main input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) temp_output_folder (default ../temp_output_files) semaphores (default 0) 
+		explanation - the temp_output_folder is not for the output.gml file, it's a temporary folder that gets erased after the -z option
 	(combine files)
-	./batch -z
+	./main -z
 		explanation - program does not know when all jobs have finished...after all jobs complete, tell program to join partial files from output folder into a gml file
 		-z - if the first run had two granularity values
-	(or, for multiple simultaneous runs)
-	./batch outputfolder outputfile num_ind num_snps
-		explanation - the -z option reads the params.h file, but if you launch multiple jobs they overwrite that file so instead you must tell it the parameters
 
 explanation:
 	input - a snps data file containing snp data
@@ -98,7 +88,7 @@ explanation:
 	numHeaderRows - number of header rows at top of input file
 	numheaderCols - number of non-data columns at front of each row
 	(the rest of the parameters have defaults and may be left blank)
-	granularity1 - integer between 1 and 7 for number of divisions into start table made by batch.sh
+	granularity1 - integer between 1 and 7 for number of divisions into start table made by main.sh
 	granularity2 - integer between 1 and 7 for number of divisions into those divisions made by each run of ccc
 		- optionally 0...the program will not run multiprocessing, instead just splitting the file into partitions and launching a separate SLURM job on each
 	max_simultaneous_processes - the number of processors found in each node on your HPC system (no more than 24), or the maximum processes at a time allowed on your system
@@ -111,21 +101,12 @@ output files:
 	SLURM output files
 
 example run:
-	./batch /home/username/data/acgt.txt /home/username/data/out.gml 0.7 10 1000 1 11 1 7 15 /home/username/data/temp_output_files
+	./main /home/username/data/acgt.txt /home/username/data/out.gml 0.7 10 1000 1 11 1 7 15 /home/username/data/temp_output_files
 	(wait until all jobs have completed, then generate gml file)
-	./batch -z
-
-multiple simultaneous runs:
-	./batch /home/username/data/file1.txt /home/username/data/out1.gml 0.7 100 1000 1 11 1 7 15 /home/username/data/temp_output_files1
-	(wait until job 1 starts running)
-	./batch /home/username/data/file2.txt /home/username/data/out2.gml 0.7 100 1000 1 11 1 7 15 /home/usernamedata/temp_output_files2
-	(wait until job 1 has completed)
-	./batch /home/username/data/temp_output_files1 /home/username/data/out1.gml 100 1000
-	(wait until job 2 has completed)
-	./batch /home/username/data/temp_output_files2 /home/username/data/out2.gml 100 1000
+	./main -z
 
 checking results:
-	after invoking -z, or the four parameter option, read the resulting SLURM output file
+	after invoking -z, read the resulting SLURM output file
 	if the expected comparisons don't equal the comparisons, then the resulting gml file is wrong
 	your selected granularity values may not have been a good fit for the input file size
 	run the entire program again with lower granularity values

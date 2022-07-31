@@ -19,14 +19,6 @@ then
 		srun ./mproc "true"
 	fi
 	exit 0
-elif [[ "$#" -eq 4 ]]
-then
-        outputfolder=$1
-        outputfile=$2
-        let numind=$3
-        let numsnps=$4
-        srun ./mproc $outputfolder $outputfile $numind $numsnps
-        exit 0
 elif [[ "$#" -ne 16 ]]
 then
 	echo "args $#"
@@ -67,7 +59,7 @@ shift
 let ystop=$1
 shift
 
-#echo "mproc.sh running mproc with granularity $granularity2 procs $maxprocesses count $count step $step xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
+echo "mproc.sh running mproc with granularity $granularity2 procs $maxprocesses count $count step $step xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
 
 if [[ $granularity2 -gt 0 ]]
 then

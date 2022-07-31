@@ -23,7 +23,7 @@ then
 		then
 			continue
 		fi
-		file="$tempfolder/$f"
+		file="$tempfolder$f"
 		if [[ $firstfile -eq 0 ]]
 		then
 			text=$( head -n -1 "$file" )
@@ -42,7 +42,7 @@ then
 		echo -e "$text" >> $gmlfile
 	done
 	echo "]" >> $gmlfile
-	command rm -rf $tempfolder
+	#command rm -rf $tempfolder
 	exit 0
 elif [[ "$#" -ne 13 ]]
 then
@@ -84,9 +84,9 @@ shift
 # problem if output file does not have .gml extension
 #outputfile=${outputfile%.gml}
 outputfile=$outputfolder
-outputfile+="/"
+#outputfile+="/"
 outputfile+=$count
 outputfile+=".gml"
-#echo $outputfile
+#echo "$inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop"
 srun ./ccc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
 

@@ -129,6 +129,7 @@ int main(int argc, char ** argv)
 		sleep(1);
 		fclose(output);
 		// remove all files
+		/*
 		sleep(1);
 		rewinddir(dp);
 		for(entry=readdir(dp);entry != NULL;entry=readdir(dp)){
@@ -147,6 +148,7 @@ int main(int argc, char ** argv)
 		if(status != 0){
 			printf("error - could not remove output folder\n");
 		}
+		*/
 		exit(exit_status);
         } else if (argc < 8 || argc > 17){
 		fprintf(stderr,"args %d\n",argc);

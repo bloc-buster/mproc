@@ -1,18 +1,15 @@
 #!/bin/bash
 
-echo "BATCH.SH"
-
-
 if [[ "$#" -eq 1 ]]
 then
 	slurmoutfile=$1
-	command sbatch --output="$slurmoutfile-%j.out" ./mproc.sh "true" 
+	command sbatch --output="$slurmoutfile%j.out" ./mproc.sh "true" 
 	exit 0
 elif [[ "$#" -lt 7 || "$#" -gt 12 ]]
 then
 	echo "$#"
-	echo "usage: ./batch.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) temp_output_folder (default temp_output_files)"
-	echo "alternate (only for conclude): ./batch.sh true"
+	echo "usage: ./main.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) temp_output_folder (default temp_output_files)"
+	echo "alternate (only for conclude): ./main.sh true"
 	exit 1
 fi
 
@@ -21,7 +18,6 @@ inputfile=$1
 shift
 outputfile=$1
 shift
-slurmoutfile="$outputfile-%j.out"
 threshold=$1
 shift
 let numind=$1
@@ -66,6 +62,7 @@ then
 	outputfolder=$1
 	shift
 fi
+slurmoutfile="$outputfolder%j.out"
 let semaphores=0
 if [ $numargs -ge 12 ]
 then
@@ -151,12 +148,11 @@ for (( x = 0; x < ${#x_start[@]}; x += 1 ))
 do
 	if [[ $granularity2 -gt 0 ]]
 	then
-		echo "batch.sh running mproc.sh with granularity $granularity2 step $step count $count x-start ${x_start[$x]} x-stop ${x_stop[$x]} y-start ${y_start[$x]} y-stop ${y_stop[$x]}"
-		echo "$slurmoutfile $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}"
-		#command sbatch --output=$slurmoutfile ./mproc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}
+		#echo "main.sh running mproc.sh with granularity $granularity2 step $step count $count x-start ${x_start[$x]} x-stop ${x_stop[$x]} y-start ${y_start[$x]} y-stop ${y_stop[$x]}"
+		#echo "parameters $slurmoutfile $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}"
+		command sbatch --output=$slurmoutfile ./mproc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}
 	else
-		continue
-		#command sbatch --output=$slurmoutfile ./ccc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $outputfolder $count ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}
+		command sbatch --output=$slurmoutfile ./ccc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $outputfolder $count ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}
 	fi
 	let count+=1
 done
