@@ -107,7 +107,7 @@ int main(int argc, char ** argv)
 		rewinddir(dp);
 		for(entry=readdir(dp);entry != NULL;entry=readdir(dp)){
 			char* filename = entry->d_name;
-			if(strcmp(filename,".")==0 || strcmp(filename,"..")==0 || strstr(filename,"checksum")){
+			if(strcmp(filename,".")==0 || strcmp(filename,"..")==0 || strstr(filename,"checksum") || strstr(filename,".out")){
 				continue;
 			}
 			char buffer[200];
