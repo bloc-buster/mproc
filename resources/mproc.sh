@@ -16,7 +16,7 @@ then
 	conclude=$1
 	if [ "$conclude" == "true" ]
 	then
-		srun ./mproc "true"
+		srun mproc "true"
 	fi
 	exit 0
 elif [[ "$#" -ne 16 ]]
@@ -63,7 +63,7 @@ echo "mproc.sh running mproc with granularity $granularity2 procs $maxprocesses 
 
 if [[ $granularity2 -gt 0 ]]
 then
-   srun ./mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop
+   srun mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop
 else
    # remove .gml extension from output file, append number, then reappend .gml
    # problem if output file does not have .gml extension
@@ -71,7 +71,7 @@ else
    outputfile+=$count
    outputfile+=".gml"
    echo $outputfile
-   srun ./ccc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
+   srun ccc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
 fi
 
 let status=$?

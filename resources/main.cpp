@@ -18,10 +18,52 @@
 using namespace std;
 
 int main(int argc,char ** argv){
+	fprintf(stdout,"command line args\n");
+	for(int i = 0; i < argc; ++i){
+		fprintf(stdout,"%s\n",argv[i]);
+	}
+	char * runfile = argv[0];// path to executable
+	if(strstr(runfile,"/./")){
+		fprintf(stderr,"error - please do not use srun with a ./ file name\n");
+		exit(1);
+	}
+	if(runfile[0]=='.'){
+		++runfile;
+		if(runfile[0]=='/'){
+			++runfile;
+		}
+	}
+	fprintf(stdout,"runfile %s\n",runfile);
+	char dir[MAXPATHLEN+1];// working directory
+	getcwd(dir,MAXPATHLEN+1);
+	fprintf(stdout,"working directory %s\n",dir);
 	int ch;
 	while((ch=getopt(argc,argv,"z")) != -1){
 		if(ch=='z'){
-			FILE * file = fopen("./params.h","r");
+			char paramfile1[100];
+			bool found = false;
+                        for (int i = strlen(runfile) - 1; i >= 0; i--) {
+                           if (runfile[i] == '/') {
+			      found = true;
+		              strncpy(paramfile1,runfile,i+1);
+			      paramfile1[i+1] = '\0';
+                              break;
+                           }
+	                }
+			fprintf(stdout,"%s\n",paramfile1);
+			char paramfile2[150];
+			char mainfile[150];
+			char cccfile[150];
+			if(found==true){
+			   sprintf(paramfile2,"%sparams.h\0",paramfile1);
+			   sprintf(mainfile,"%smain.sh\0",paramfile1);
+			   sprintf(cccfile,"%sccc.sh\0",paramfile1);
+			} else {
+			   sprintf(paramfile2,"params.h\0");
+			   sprintf(mainfile,"main.sh\0");
+			   sprintf(cccfile,"ccc.sh\0");
+			}
+			FILE * file = fopen(paramfile2,"r");
 			if(file==NULL){
 				printf("error - could not read params file\n");
 				exit(1);
@@ -31,6 +73,7 @@ int main(int argc,char ** argv){
 			char * gmlfile;
 			char * tempfolder;
 			char * granularity2;
+			//char * runfile;
 			while(fgets(buffer,1000,file) != NULL){
 				token = strtok(buffer," ");
 				while(token != NULL){
@@ -46,7 +89,11 @@ int main(int argc,char ** argv){
 						token = strtok(NULL," ");
 						granularity2 = strdup(token);
 						break;
-					}
+					} /*else if(strcmp(token,"runfile")==0){
+						token = strtok(NULL," ");
+						runfile = strdup(token);
+						break;
+					}*/
 					token = strtok(NULL," ");
 				}
 			}
@@ -54,14 +101,18 @@ int main(int argc,char ** argv){
 			char command[150];
 			if(ch=='z'){
 				if(atoi(granularity2) > 0){
-					sprintf(command,"./main.sh %s %s", strtok(tempfolder,"\n"));
+					//sprintf(command,"bash %s %s", mainfile, strtok(tempfolder,"\n"));
+					sprintf(command,"bash %s.sh %s", strtok(runfile,"\n"), strtok(tempfolder,"\n"));
 				} else {
-					sprintf(command,"./ccc.sh %s %s", strtok(tempfolder,"\n"), strtok(gmlfile,"\n"));
+					sprintf(command,"bash %s %s %s", cccfile, strtok(tempfolder,"\n"), strtok(gmlfile,"\n"));
 				}
 			} else {
 				fprintf(stderr,"error - unknown option\n");
 				exit(1);
 			}
+			fprintf(stdout,"running command\n");
+			fprintf(stdout,"%s\n",command);
+			//exit(1);
 			system(command);
 			return 0;
 		}
@@ -80,7 +131,7 @@ int main(int argc,char ** argv){
 		exit(1);
 	}
 	fclose(fptr);
-  	char filestem[100];
+  	char filestem[100];// path to input data file
         for (int i = strlen(input) - 1; i >= 0; i--) {
              if (input[i] == '/') {
 		strncpy(filestem,input,i+1);
@@ -100,6 +151,7 @@ int main(int argc,char ** argv){
 	}
 	if(strstr(output,"/") != NULL){
 		fprintf(stderr,"error - outputfile must be a file name, not a file path\n");
+		fprintf(stderr,"%s\n",output);
 		exit(1);
 	}
 	char outputfile[strlen(filestem) + strlen(output) + 1];
@@ -180,7 +232,7 @@ int main(int argc,char ** argv){
 		}
 	}
 	char command[150];
-	sprintf(command,"srun ./main.sh %s %s %f %d %d %d %d %d %d %d %s %d",input,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
+	sprintf(command,"srun %s/%s.sh %s %s %f %d %d %d %d %d %d %d %s %d",dir,runfile,input,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
 	system(command);
 	return 0;
 }
