@@ -44,7 +44,7 @@ then
 	echo "]" >> $gmlfile
 	#command rm -rf $tempfolder
 	exit 0
-elif [[ "$#" -ne 13 ]]
+elif [[ "$#" -ne 14 ]]
 then
 	echo "args $#"
 	echo "usage: ./ccc.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols output_folder (default temp_output_files) count x1 x2 y1 y2"
@@ -77,6 +77,8 @@ let ystart=$1
 shift
 let ystop=$1
 shift
+runpath=$1
+shift
 
 #echo "ccc.sh running ccc with count $count xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
 
@@ -88,5 +90,5 @@ outputfile=$outputfolder
 outputfile+=$count
 outputfile+=".gml"
 #echo "$inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop"
-srun ccc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
+srun "$runpath/ccc" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
 

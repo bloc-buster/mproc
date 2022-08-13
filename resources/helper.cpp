@@ -15,7 +15,6 @@ using namespace std;
 
 int main(int argc, char ** argv)
 {
-
   int numInd = atoi(argv[0]);
   int numSnps = atoi(argv[1]);
   int numNodes = atoi(argv[2]);

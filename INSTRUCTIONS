@@ -27,8 +27,9 @@ required files:
 	Makefile
 
 project structure:
-	Since the number of executable files is large, the project is stored in the resources folder and must be run from that folder. However, we require that all output be stored outside of the resources folder. Hence, the location of the input folder determines the location of the output file and the log folder. The output file will be placed in the same folder as the input file, and the output folder containing log files will be placed in that folder as well.
-	For clarification, the start file must be run from inside the resources folder. Hence, to run the project, you should cd into the resources folder and type ./main with a list of arguments, wait for it to complete, then conclude with ./main -z. Then, to retrieve output, you should cd out of the resources folder and into the folder with the input file, which may be placed in a folder of your choice.
+	The project is stored in the resources folder. We require that all output be stored outside of the resources folder. 
+	The output file is automatcially placed in the same folder as the input file, and the output folder containing log files will be placed in that folder as well. Any attempt to read from or write to the folder containing the executables will result in an error.
+	Since the file requires two runs, you must run both of them from the same folder. Any attempt to perform the second run from a different folder will result in an error.
 
 project structure:
 	project folder (name of your choice)

@@ -10,22 +10,21 @@
 #echo "ERROR! Overwrite mproc.sh with sbatch parameters for your local system, then comment out these lines."
 #exit 1
 
+let numargs=$#
 
 if [[ "$#" -eq 1 ]]
 then
-	conclude=$1
-	if [ "$conclude" == "true" ]
-	then
-		srun mproc "true"
-	fi
+	runpath=$1
+	shift
+	echo "running $runpath/mproc"
+	srun "$runpath/mproc" "true"
 	exit 0
-elif [[ "$#" -ne 16 ]]
+elif [[ "$#" -ne 17 ]]
 then
 	echo "args $#"
 	echo "usage: ./mproc.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity2 (default 7) max_simultaneous_processes (default 15) output_folder (default temp_output_files) snp1 snp2 step count xedge yedge"
 	exit 1
 fi
-let numargs=$#
 inputfile=$1
 shift
 outputfile=$1
@@ -58,12 +57,14 @@ let ystart=$1
 shift
 let ystop=$1
 shift
+runpath=$1
+shift
 
 echo "mproc.sh running mproc with granularity $granularity2 procs $maxprocesses count $count step $step xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
 
 if [[ $granularity2 -gt 0 ]]
 then
-   srun mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop
+   srun "$runpath/mproc" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop $runpath
 else
    # remove .gml extension from output file, append number, then reappend .gml
    # problem if output file does not have .gml extension
@@ -71,7 +72,7 @@ else
    outputfile+=$count
    outputfile+=".gml"
    echo $outputfile
-   srun ccc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
+   srun "$runpath/ccc" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
 fi
 
 let status=$?

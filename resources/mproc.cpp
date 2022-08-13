@@ -150,7 +150,7 @@ int main(int argc, char ** argv)
 		}
 		*/
 		exit(exit_status);
-        } else if (argc < 8 || argc > 17){
+        } else if (argc < 8 || argc > 18){
 		fprintf(stderr,"args %d\n",argc);
 		fatal("Usage:\n\n   ccc input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity (default 7) max_simultaneous_processes (default 15) output_folder (default temp_output_files) snp1 snp2 step count xedge yedge\n\n");  
 	}
@@ -535,7 +535,7 @@ int main(int argc, char ** argv)
 	int nodecount = atoi(argv[11]);
 	char checkfileName[100];
 	//sprintf(checkfileName,"%s/checksum",OUTPUT_FOLDER);
-	sprintf(checkfileName,"%s/checksum_%d",OUTPUT_FOLDER,nodecount);
+	sprintf(checkfileName,"%schecksum_%d",OUTPUT_FOLDER,nodecount);
 	FILE * checksum = fopen(checkfileName,"w");
 	if(checksum==NULL){
 		fprintf(stderr,"error - could not create checksum file\n");
@@ -557,6 +557,8 @@ int main(int argc, char ** argv)
 	vector<int> x2;
 	vector<int> y1;
 	vector<int> y2;
+	char runpath[150];
+	sprintf(runpath,"%s\0",argv[17]);
 	//fprintf(stdout,"mproc in %s out %s thresh %f ind %d snps %d headrows %d columns %d gran %d maxprocs %d out %s count %d step %d x1 %d x2 %d y1 %d y2 %d\n",argv[1],argv[2],thresh,numInd,numSnps,numheadrows,numheadcols,granularity,maxprocesses,OUTPUT_FOLDER,nodecount,step1,xstart,xstop,ystart,ystop);
 	for(int x = 1; x <= granularity; ++x){
 		for(int y = 1; y <= granularity; ++y){
@@ -619,6 +621,8 @@ int main(int argc, char ** argv)
 	sprintf(arg10,"%s",checkfileName);
 	vector<int> pids;
 	int temp_file_number = 1;
+	char helperfile[150];
+	sprintf(helperfile,"%s/helper",runpath);
 	for(int x = 0; x < x1.size(); ++x){
 	//for(int y = snip2;y < ybound && y < numSnps;y += step2){
 		//for(int x = snip1;x < xbound && x < numSnps;x += step2){
@@ -629,8 +633,9 @@ int main(int argc, char ** argv)
 			sprintf(arg15,"temp_%d_%d",x1[x],y1[x]);//outputfileName
 			pid_t pid = fork();
 			if(pid==0){ // child
-				execl("helper",arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,NULL);//no log file
-				fprintf(stderr,"error launching child process %d\n",temp_file_number - 1);
+				execl(helperfile,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,NULL);//no log file
+				fprintf(stderr,"error launching child process %d %s\n",temp_file_number - 1,helperfile);
+				fprintf(stderr,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15);
 				_exit(1);
 			}
 			pids.push_back(pid);

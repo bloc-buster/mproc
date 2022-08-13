@@ -73,7 +73,7 @@ int main(int argc,char ** argv){
 			char * gmlfile;
 			char * tempfolder;
 			char * granularity2;
-			//char * runfile;
+			char * prevrunfile;
 			while(fgets(buffer,1000,file) != NULL){
 				token = strtok(buffer," ");
 				while(token != NULL){
@@ -89,26 +89,33 @@ int main(int argc,char ** argv){
 						token = strtok(NULL," ");
 						granularity2 = strdup(token);
 						break;
-					} /*else if(strcmp(token,"runfile")==0){
+					} else if(strcmp(token,"runfile")==0){
 						token = strtok(NULL," ");
-						runfile = strdup(token);
+						prevrunfile = strdup(token);
 						break;
-					}*/
+					}
 					token = strtok(NULL," ");
 				}
 			}
 			fclose(file);
-			char command[150];
-			if(ch=='z'){
-				if(atoi(granularity2) > 0){
-					//sprintf(command,"bash %s %s", mainfile, strtok(tempfolder,"\n"));
-					sprintf(command,"bash %s.sh %s", strtok(runfile,"\n"), strtok(tempfolder,"\n"));
-				} else {
-					sprintf(command,"bash %s %s %s", cccfile, strtok(tempfolder,"\n"), strtok(gmlfile,"\n"));
-				}
-			} else {
-				fprintf(stderr,"error - unknown option\n");
+			char nextrunfile[150];
+			sprintf(nextrunfile,"%s/%s/",dir,runfile);
+			//nextrunfile[strlen(nextrunfile) - 5] = '/';
+			nextrunfile[strlen(nextrunfile) - 5] = '\0';
+			prevrunfile[strlen(prevrunfile) - 1] = '\0';//remove newline
+			fprintf(stdout,"prev was %s current is %s\n",prevrunfile,nextrunfile);
+			if(strcmp(nextrunfile,prevrunfile) != 0){
+				fprintf(stderr,"error - must run from same folder as previous run\n");
+				fprintf(stderr,"%s %s\n",prevrunfile,nextrunfile);
 				exit(1);
+			}
+			char command[150];
+			if(atoi(granularity2) > 0){
+				sprintf(command,"srun %smain.sh %s", prevrunfile, strtok(tempfolder,"\n"));
+				//sprintf(command,"srun %s %s", mainfile, strtok(tempfolder,"\n"));
+				//sprintf(command,"srun %s.sh %s", strtok(runfile,"\n"), strtok(tempfolder,"\n"));
+			} else {
+				sprintf(command,"srun %s %s %s", cccfile, strtok(tempfolder,"\n"), strtok(gmlfile,"\n"));
 			}
 			fprintf(stdout,"running command\n");
 			fprintf(stdout,"%s\n",command);
@@ -233,7 +240,8 @@ int main(int argc,char ** argv){
 	}
 	char command[150];
 	sprintf(command,"srun %s/%s.sh %s %s %f %d %d %d %d %d %d %d %s %d",dir,runfile,input,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
-	system(command);
+	fprintf(stdout,"main.cpp running command %s\n",command);
+	//system(command);
 	return 0;
 }
 

@@ -12,7 +12,7 @@ typedef struct{
 
 DATA* D;
 int data_id;
-char DATAKEYNAME[] = "./data.key";
+//char DATAKEYNAME[] = "./data.key";
 
 void getShm(){
    FILE* dataptr;
