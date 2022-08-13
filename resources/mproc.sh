@@ -16,7 +16,7 @@ if [[ "$#" -eq 1 ]]
 then
 	runpath=$1
 	shift
-	echo "running $runpath/mproc"
+	echo "mproc.sh running $runpath/mproc"
 	srun "$runpath/mproc" "true"
 	exit 0
 elif [[ "$#" -ne 17 ]]
@@ -64,7 +64,9 @@ echo "mproc.sh running mproc with granularity $granularity2 procs $maxprocesses 
 
 if [[ $granularity2 -gt 0 ]]
 then
-   srun "$runpath/mproc" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop $runpath
+   args="$runpath/mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop $runpath"
+   echo "mproc.sh running $args"
+   srun $args
 else
    # remove .gml extension from output file, append number, then reappend .gml
    # problem if output file does not have .gml extension
@@ -72,7 +74,10 @@ else
    outputfile+=$count
    outputfile+=".gml"
    echo $outputfile
-   srun "$runpath/ccc" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
+   args="$runpath/ccc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop"
+   echo $args
+   exit 1
+   srun $args
 fi
 
 let status=$?

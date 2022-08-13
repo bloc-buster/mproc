@@ -20,23 +20,13 @@ using namespace std;
 int main(int argc,char ** argv){
 	fprintf(stdout,"command line args\n");
 	for(int i = 0; i < argc; ++i){
-		fprintf(stdout,"%s\n",argv[i]);
+		fprintf(stdout,"%s ",argv[i]);
 	}
-	char * runfile = argv[0];// path to executable
-	if(strstr(runfile,"/./")){
-		fprintf(stderr,"error - please do not use srun with a ./ file name\n");
-		exit(1);
-	}
-	if(runfile[0]=='.'){
-		++runfile;
-		if(runfile[0]=='/'){
-			++runfile;
-		}
-	}
-	fprintf(stdout,"runfile %s\n",runfile);
+	fprintf(stdout,"\n");
 	char dir[MAXPATHLEN+1];// working directory
 	getcwd(dir,MAXPATHLEN+1);
 	fprintf(stdout,"working directory %s\n",dir);
+	char * runfile = realpath(argv[0],NULL);
 	int ch;
 	while((ch=getopt(argc,argv,"z")) != -1){
 		if(ch=='z'){
@@ -98,17 +88,17 @@ int main(int argc,char ** argv){
 				}
 			}
 			fclose(file);
-			char nextrunfile[150];
-			sprintf(nextrunfile,"%s/%s/",dir,runfile);
+			//char nextrunfile[150];
+			//sprintf(nextrunfile,"%s/%s/",dir,runfile);
 			//nextrunfile[strlen(nextrunfile) - 5] = '/';
-			nextrunfile[strlen(nextrunfile) - 5] = '\0';
+			//nextrunfile[strlen(nextrunfile) - 5] = '\0';
 			prevrunfile[strlen(prevrunfile) - 1] = '\0';//remove newline
-			fprintf(stdout,"prev was %s current is %s\n",prevrunfile,nextrunfile);
-			if(strcmp(nextrunfile,prevrunfile) != 0){
+			//fprintf(stdout,"prev was %s current is %s\n",prevrunfile,nextrunfile);
+			/*if(strcmp(nextrunfile,prevrunfile) != 0){
 				fprintf(stderr,"error - must run from same folder as previous run\n");
 				fprintf(stderr,"%s %s\n",prevrunfile,nextrunfile);
 				exit(1);
-			}
+			}*/
 			char command[150];
 			if(atoi(granularity2) > 0){
 				sprintf(command,"srun %smain.sh %s", prevrunfile, strtok(tempfolder,"\n"));
@@ -119,7 +109,6 @@ int main(int argc,char ** argv){
 			}
 			fprintf(stdout,"running command\n");
 			fprintf(stdout,"%s\n",command);
-			//exit(1);
 			system(command);
 			return 0;
 		}
@@ -131,17 +120,17 @@ int main(int argc,char ** argv){
 		printf("\ncombine files: ./main -z\n\n");
 		exit(1);
 	}
-	char * input = argv[1];
-	FILE * fptr = fopen(input,"r");
+	char * inputfile = realpath(argv[1], NULL);
+	FILE * fptr = fopen(inputfile,"r");
 	if(fptr==NULL){
 		printf("error - could not open input file\n");
 		exit(1);
 	}
 	fclose(fptr);
   	char filestem[100];// path to input data file
-        for (int i = strlen(input) - 1; i >= 0; i--) {
-             if (input[i] == '/') {
-		strncpy(filestem,input,i+1);
+        for (int i = strlen(inputfile) - 1; i >= 0; i--) {
+             if (inputfile[i] == '/') {
+		strncpy(filestem,inputfile,i+1);
 		filestem[i+1] = '\0';
                 break;
              }
@@ -239,9 +228,9 @@ int main(int argc,char ** argv){
 		}
 	}
 	char command[150];
-	sprintf(command,"srun %s/%s.sh %s %s %f %d %d %d %d %d %d %d %s %d",dir,runfile,input,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
+	sprintf(command,"srun %s.sh %s %s %f %d %d %d %d %d %d %d %s %d",runfile,inputfile,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
 	fprintf(stdout,"main.cpp running command %s\n",command);
-	//system(command);
+	system(command);
 	return 0;
 }
 

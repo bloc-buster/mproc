@@ -8,12 +8,15 @@ then
 else
 	runpath="."
 fi
-#echo "runpath $runpath"
+3echo "runpath $runpath"
 
 if [[ "$#" -eq 1 ]]
 then
 	slurmoutfile=$1
-	command sbatch --output="$slurmoutfile%j.out" "$runpath/mproc.sh" $runpath 
+	params="--output=$slurmoutfile%j.out $runpath/mproc.sh $runpath" 
+	echo "main.sh running sbatch $params"
+	command sbatch $params
+	#command sbatch --output="$slurmoutfile%j.out" "$runpath/mproc.sh" $runpath 
 	exit 0
 elif [[ "$#" -lt 7 || "$#" -gt 13 ]]
 then
@@ -82,7 +85,6 @@ fi
 
 params="#define num_ind $numind\n#define num_snps1 $numsnps\n#define num_snps2 $numsnps\n#define gml_file \"$outputfile\"\n#define temp_folder \"$outputfolder\"\n#define semaphores $semaphores\n#define granularity2 $granularity2\n#define runfile $runpath/\n#define DATAKEYNAME \"$runpath/data.key\"\n"
 echo $params
-exit 1
 wd=$( pwd )
 command cd $runpath
 command echo -e $params > params.h
@@ -165,7 +167,9 @@ do
 	then
 		#echo "main.sh running mproc.sh with granularity $granularity2 step $step count $count x-start ${x_start[$x]} x-stop ${x_stop[$x]} y-start ${y_start[$x]} y-stop ${y_stop[$x]}"
 		#echo "parameters $slurmoutfile $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}"
-		command sbatch --output=$slurmoutfile "$runpath/mproc.sh" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath
+		args="--output=$slurmoutfile $runpath/mproc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath"
+		echo "main.sh running sbatch $args"
+		command sbatch $args
 	else
 		command sbatch --output=$slurmoutfile "$runpath/ccc.sh" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $outputfolder $count ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath
 	fi
