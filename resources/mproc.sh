@@ -3,7 +3,7 @@
 #SBATCH -p Lewis 
 #SBATCH -N 1
 #SBATCH -c 15
-#SBATCH --mem 32G
+#SBATCH --mem 64G
 #SBATCH --time=0-01:00:00
 #SBATCH --account=climerlab
 
@@ -16,7 +16,7 @@ if [[ "$#" -eq 1 ]]
 then
 	runpath=$1
 	shift
-	echo "mproc.sh running $runpath/mproc"
+	#echo "mproc.sh running $runpath/mproc"
 	srun "$runpath/mproc" "true"
 	exit 0
 elif [[ "$#" -ne 17 ]]
@@ -60,24 +60,16 @@ shift
 runpath=$1
 shift
 
-echo "mproc.sh running mproc with granularity $granularity2 procs $maxprocesses count $count step $step xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
+#echo "mproc.sh running mproc with granularity $granularity2 procs $maxprocesses count $count step $step xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
 
 if [[ $granularity2 -gt 0 ]]
 then
    args="$runpath/mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop $runpath"
-   echo "mproc.sh running $args"
+   #echo "mproc.sh running $args"
    srun $args
 else
-   # remove .gml extension from output file, append number, then reappend .gml
-   # problem if output file does not have .gml extension
-   outputfile=${outputfile%.gml}
-   outputfile+=$count
-   outputfile+=".gml"
-   echo $outputfile
-   args="$runpath/ccc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop"
-   echo $args
+   echo "error - mproc.sh running ccc file"
    exit 1
-   srun $args
 fi
 
 let status=$?

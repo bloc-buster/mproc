@@ -29,7 +29,6 @@ required files:
 project structure:
 	The project is stored in the resources folder. We require that all output be stored outside of the resources folder. 
 	The output file is automatcially placed in the same folder as the input file, and the output folder containing log files will be placed in that folder as well. Any attempt to read from or write to the folder containing the executables will result in an error.
-	Since the file requires two runs, you must run both of them from the same folder. Any attempt to perform the second run from a different folder will result in an error.
 
 project structure:
 	project folder (name of your choice)

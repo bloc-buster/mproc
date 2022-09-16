@@ -1,12 +1,12 @@
 CC = g++ 
 CFLAGS = -g -lpthread -lm
 
-all: mproc helper main
+all: mproc helper blocbuster
 mproc: mproc.cpp
 	$(CC) $^ -o $@ $(CFLAGS)
 helper: helper.cpp
 	$(CC) $^ -o $@ $(CFLAGS)
-main: main.cpp
+blocbuster: blocbuster.cpp
 	$(CC) $^ -o $@ $(CFLAGS)
 ccc: bloc.cpp
 	$(CC) $^ -o $@ $(CFLAGS)

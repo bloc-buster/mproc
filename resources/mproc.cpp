@@ -104,12 +104,16 @@ int main(int argc, char ** argv)
 				fprintf(output, "\tnode \n\t[\n\tid %d \n\t]\n", j);
 		}
 		sleep(1);
+		//int gmlcount = 0;
 		rewinddir(dp);
 		for(entry=readdir(dp);entry != NULL;entry=readdir(dp)){
 			char* filename = entry->d_name;
 			if(strcmp(filename,".")==0 || strcmp(filename,"..")==0 || strstr(filename,"checksum") || strstr(filename,".out")){
 				continue;
 			}
+			/*if(strstr(filename,".gml")){
+				++gmlcount;
+			}*/
 			char buffer[200];
 			char filepath[200];
 			sprintf(filepath,"%s/%s",OUTPUT_FOLDER,filename);
@@ -129,12 +133,12 @@ int main(int argc, char ** argv)
 		sleep(1);
 		fclose(output);
 		// remove all files
-		/*
+		
 		sleep(1);
 		rewinddir(dp);
 		for(entry=readdir(dp);entry != NULL;entry=readdir(dp)){
 			char* filename = entry->d_name;
-			if(strcmp(filename,".")==0 || strcmp(filename,"..")==0){
+			if(strcmp(filename,".")==0 || strcmp(filename,"..")==0 || strstr(filename,".out")){
 				continue;
 			}
 			char filepath[100];
@@ -148,7 +152,8 @@ int main(int argc, char ** argv)
 		if(status != 0){
 			printf("error - could not remove output folder\n");
 		}
-		*/
+		
+		//printf("total processes %d\n",gmlcount);
 		exit(exit_status);
         } else if (argc < 8 || argc > 18){
 		fprintf(stderr,"args %d\n",argc);
@@ -536,13 +541,16 @@ int main(int argc, char ** argv)
 	char checkfileName[100];
 	//sprintf(checkfileName,"%s/checksum",OUTPUT_FOLDER);
 	sprintf(checkfileName,"%schecksum_%d",OUTPUT_FOLDER,nodecount);
-	FILE * checksum = fopen(checkfileName,"w");
-	if(checksum==NULL){
-		fprintf(stderr,"error - could not create checksum file\n");
-		exit(1);
+	//printf("mproc created checksum file %s\n", checkfileName);
+	if(semaphores==1){ // read from params.h
+	   FILE * checksum = fopen(checkfileName,"w");
+	   if(checksum==NULL){
+	      fprintf(stderr,"error - could not create checksum file\n");
+	      exit(1);
+	   }
+	   fprintf(checksum,"%d",0);
+	   fclose(checksum);
 	}
-	fprintf(checksum,"%d",0);
-	fclose(checksum);
 	int step1 = atoi(argv[12]);
 	int step2 = (int)((float)step1 / (float)granularity);
 	if(step2 < 1){

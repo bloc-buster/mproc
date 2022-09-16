@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -p Lewis 
-#SBATCH --mem 32G
+#SBATCH --mem 64G
 #SBATCH --time=0-01:00:00
 #SBATCH --account=climerlab
 
@@ -89,6 +89,6 @@ outputfile=$outputfolder
 #outputfile+="/"
 outputfile+=$count
 outputfile+=".gml"
-#echo "$inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop"
+echo "ccc.sh running $runpath/ccc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop"
 srun "$runpath/ccc" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
 

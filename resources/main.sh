@@ -8,20 +8,20 @@ then
 else
 	runpath="."
 fi
-3echo "runpath $runpath"
+#echo "runpath $runpath"
 
 if [[ "$#" -eq 1 ]]
 then
 	slurmoutfile=$1
 	params="--output=$slurmoutfile%j.out $runpath/mproc.sh $runpath" 
-	echo "main.sh running sbatch $params"
+	#echo "main.sh running sbatch $params"
 	command sbatch $params
 	#command sbatch --output="$slurmoutfile%j.out" "$runpath/mproc.sh" $runpath 
 	exit 0
 elif [[ "$#" -lt 7 || "$#" -gt 13 ]]
 then
 	echo "$#"
-	echo "usage: ./main.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) temp_output_folder (default temp_output_files)"
+	echo "usage: ./main.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) temp_output_folder (default log_files)"
 	echo "alternate (only for conclude): ./main.sh true"
 	exit 1
 fi
@@ -51,16 +51,6 @@ let granularity2=7
 if [ $numargs -ge 9 ]
 then
 	let granularity2=$1
-	if [[ $granularity1 -gt 1 && $granularity2 -gt 7 ]]
-	then
-		echo "granularity too high, no higher than 7"
-		exit 0
-	fi
-	if [[ $granularity1 -gt 7 && $granularity2 -gt 0 ]]
-	then
-		echo "granularity too high, no higher than 7"
-		exit 0
-	fi
 	shift
 fi
 let maxprocesses=15
@@ -69,7 +59,7 @@ then
 	let maxprocesses=$1
 	shift
 fi
-#outputfolder="../temp_output_files"
+outputfolder="../log_files"
 if [ $numargs -ge 11 ]
 then
 	outputfolder=$1
@@ -83,8 +73,17 @@ then
 	shift
 fi
 
-params="#define num_ind $numind\n#define num_snps1 $numsnps\n#define num_snps2 $numsnps\n#define gml_file \"$outputfile\"\n#define temp_folder \"$outputfolder\"\n#define semaphores $semaphores\n#define granularity2 $granularity2\n#define runfile $runpath/\n#define DATAKEYNAME \"$runpath/data.key\"\n"
-echo $params
+params="
+#define num_ind $numind\n
+#define num_snps1 $numsnps\n
+#define num_snps2 $numsnps\n
+#define granularity2 $granularity2\n
+#define semaphores $semaphores\n
+#define gml_file \"$outputfile\"\n
+#define temp_folder \"$outputfolder\"\n
+#define runfile $runpath/\n
+#define DATAKEYNAME \"$runpath/data.key\"\n
+"
 wd=$( pwd )
 command cd $runpath
 command echo -e $params > params.h
@@ -168,7 +167,7 @@ do
 		#echo "main.sh running mproc.sh with granularity $granularity2 step $step count $count x-start ${x_start[$x]} x-stop ${x_stop[$x]} y-start ${y_start[$x]} y-stop ${y_stop[$x]}"
 		#echo "parameters $slurmoutfile $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}"
 		args="--output=$slurmoutfile $runpath/mproc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath"
-		echo "main.sh running sbatch $args"
+		#echo "main.sh running sbatch $args"
 		command sbatch $args
 	else
 		command sbatch --output=$slurmoutfile "$runpath/ccc.sh" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $outputfolder $count ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath

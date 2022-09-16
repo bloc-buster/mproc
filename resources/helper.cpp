@@ -40,14 +40,14 @@ int main(int argc, char ** argv)
     //fprintf(stdout,"helper using semaphores\n");
   } else {
     snprintf(checkfileName,100,"%s_%d",argv[10],getpid());
-    FILE * checksum = fopen(checkfileName,"w");
-    if(checksum==NULL){
-            fprintf(stderr,"error - could not create checksum file\n");
-            exit(1);
-    }
-    //fprintf(checksum,"%d",0);
-    fclose(checksum);
   }
+  /*FILE * checksum = fopen(checkfileName,"w");
+  if(checksum==NULL){
+          fprintf(stderr,"error - could not create checksum file\n");
+          exit(1);
+  }
+  fprintf(checksum,"%d",0);
+  fclose(checksum);*/
   int x1 = atoi(argv[11]) - 1;
   int x2 = atoi(argv[12]) - 1;
   int y1 = atoi(argv[13]) - 1;
@@ -349,6 +349,7 @@ int main(int argc, char ** argv)
     }
   }
 
+  // only print if have results
   if(results.size() > 0){
      	// write out nodes to output file
      	FILE *output;
@@ -369,13 +370,14 @@ int main(int argc, char ** argv)
 		unsigned long long int comps = 0;
 		if(semaphores==1){
 		   FILE * read;
-		   if((read = fopen(checkfileName, "r")) == NULL){
+		   if((read = fopen(checkfileName, "r"))==NULL){
 			fprintf(stderr,"error - checksum file could not be opened\n");
-			//semSignal();
+			semSignal();
 			exit(1);
-		   }
-		   fscanf(read,"%llu",&comps);
-		   fclose(read);
+		   } else {
+		   	fscanf(read,"%llu",&comps);
+		   	fclose(read);
+                   }
 		}
 		comps += comparisons;
 		FILE * write;
