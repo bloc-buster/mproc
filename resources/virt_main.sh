@@ -13,10 +13,10 @@ fi
 if [[ "$#" -eq 1 ]]
 then
 	slurmoutfile=$1
-	params="--output=$slurmoutfile%j.out $runpath/mproc.sh $runpath" 
+	params="$runpath/virt_mproc.sh $runpath" 
 	#echo "main.sh running sbatch $params"
-	command sbatch $params
-	#command sbatch --output="$slurmoutfile%j.out" "$runpath/mproc.sh" $runpath 
+	command $params
+	#command sbatch --output="$slurmoutfile%j.out" "$runpath/virt_mproc.sh" $runpath 
 	exit 0
 elif [[ "$#" -lt 7 || "$#" -gt 13 ]]
 then
@@ -89,14 +89,12 @@ wd=$( pwd )
 command cd $runpath
 command echo -e $params > params.h
 sleep 1
-command srun make clean
+command make clean
 sleep 1
-command srun make mproc
+command make mproc
 sleep 1
-command srun make helper
+command make helper
 sleep 1
-#command srun make ccc
-#sleep 1
 command cd $wd
 let status=$?
 if [ "$status" != "0" ]
@@ -123,6 +121,9 @@ then
 fi
 sleep 1
 
+# modify for non-hpc system
+let granularity1=1
+
 let step=$(( numsnps / granularity1 ))
 if [[ $step -lt 1 ]]
 then
@@ -133,6 +134,7 @@ x_start=()
 x_stop=()
 y_start=()
 y_stop=()
+
 for (( x = 1; x <= $granularity1; x += 1 ))
 do
 	for (( y = 1; y <= $granularity1; y += 1 ))
@@ -165,13 +167,13 @@ for (( x = 0; x < ${#x_start[@]}; x += 1 ))
 do
 	if [[ $granularity2 -gt 0 ]]
 	then
-		#echo "main.sh running mproc.sh with granularity $granularity2 step $step count $count x-start ${x_start[$x]} x-stop ${x_stop[$x]} y-start ${y_start[$x]} y-stop ${y_stop[$x]}"
+		#echo "main.sh running virt_mproc.sh with granularity $granularity2 step $step count $count x-start ${x_start[$x]} x-stop ${x_stop[$x]} y-start ${y_start[$x]} y-stop ${y_stop[$x]}"
 		#echo "parameters $slurmoutfile $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}"
-		args="--output=$slurmoutfile $runpath/mproc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath"
+		args="$runpath/virt_mproc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath"
 		#echo "main.sh running sbatch $args"
-		command sbatch $args
+		command $args
 	else
-		command sbatch --output=$slurmoutfile "$runpath/ccc.sh" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $outputfolder $count ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath
+		command "$runpath/virt_ccc.sh" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $outputfolder $count ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath
 	fi
 	let count+=1
 done

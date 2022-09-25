@@ -1,0 +1,71 @@
+#!/bin/bash
+
+let numargs=$#
+
+if [[ "$#" -eq 1 ]]
+then
+	runpath=$1
+	shift
+	#echo "mproc.sh running $runpath/mproc"
+	command "$runpath/mproc" "true"
+	exit 0
+elif [[ "$#" -ne 17 ]]
+then
+	echo "args $#"
+	echo "usage: ./mproc.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity2 (default 7) max_simultaneous_processes (default 15) output_folder (default temp_output_files) snp1 snp2 step count xedge yedge"
+	exit 1
+fi
+inputfile=$1
+shift
+outputfile=$1
+shift
+threshold=$1
+shift
+let numind=$1
+shift
+let numsnps=$1
+shift
+let numheaderrows=$1
+shift
+let numheadercols=$1
+shift
+let granularity2=$1
+shift
+let maxprocesses=$1
+shift
+outputfolder=$1
+shift
+let count=$1
+shift
+let step=$1
+shift
+let xstart=$1
+shift
+let xstop=$1
+shift
+let ystart=$1
+shift
+let ystop=$1
+shift
+runpath=$1
+shift
+
+#echo "mproc.sh running mproc with granularity $granularity2 procs $maxprocesses count $count step $step xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
+
+if [[ $granularity2 -gt 0 ]]
+then
+   args="$runpath/mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop $runpath"
+   #echo "mproc.sh running $args"
+   command $args
+else
+   echo "error - mproc.sh running ccc file"
+   exit 1
+fi
+
+let status=$?
+if [ "$status" != "0" ]
+then
+	echo "checksum error"
+	exit 1
+fi
+

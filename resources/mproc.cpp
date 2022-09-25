@@ -632,38 +632,34 @@ int main(int argc, char ** argv)
 	char helperfile[150];
 	sprintf(helperfile,"%s/helper",runpath);
 	for(int x = 0; x < x1.size(); ++x){
-	//for(int y = snip2;y < ybound && y < numSnps;y += step2){
-		//for(int x = snip1;x < xbound && x < numSnps;x += step2){
-			sprintf(arg11,"%d",x1[x]);
-			sprintf(arg12,"%d",x2[x]);
-			sprintf(arg13,"%d",y1[x]);
-			sprintf(arg14,"%d",y2[x]);
-			sprintf(arg15,"temp_%d_%d",x1[x],y1[x]);//outputfileName
-			pid_t pid = fork();
-			if(pid==0){ // child
-				execl(helperfile,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,NULL);//no log file
-				fprintf(stderr,"error launching child process %d %s\n",temp_file_number - 1,helperfile);
-				fprintf(stderr,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15);
-				_exit(1);
-			}
-			pids.push_back(pid);
-                        //fprintf(stdout,"mproc %d step %d x1 %d x2 %d y1 %d y2 %d\n",pid,step2,x1[x],x2[x],y1[x],y2[x]);
-			++curprocs;
-			if(curprocs >= maxprocesses){
-				while(curprocs >= maxprocesses){
-					for(int z = 0;z < pids.size();++z){
-						int status;
-						int temp = waitpid(pids[z],&status,WNOHANG | WUNTRACED);  
-						if(temp != 0){ // completed
-							pids.erase(pids.begin() + z);
-							--curprocs;
-							break;
-						}
+		sprintf(arg11,"%d",x1[x]);
+		sprintf(arg12,"%d",x2[x]);
+		sprintf(arg13,"%d",y1[x]);
+		sprintf(arg14,"%d",y2[x]);
+		sprintf(arg15,"temp_%d_%d",x1[x],y1[x]);//outputfileName
+		pid_t pid = fork();
+		if(pid==0){ // child
+			execl(helperfile,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,NULL);//no log file
+			fprintf(stderr,"error launching child process %d %s\n",temp_file_number - 1,helperfile);
+			fprintf(stderr,"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n",arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15);
+			_exit(1);
+		}
+		pids.push_back(pid);
+                //fprintf(stdout,"mproc %d step %d x1 %d x2 %d y1 %d y2 %d\n",pid,step2,x1[x],x2[x],y1[x],y2[x]);
+		++curprocs;
+		if(curprocs >= maxprocesses){
+			while(curprocs >= maxprocesses){
+				for(int z = 0;z < pids.size();++z){
+					int status;
+					int temp = waitpid(pids[z],&status,WNOHANG | WUNTRACED);  
+					if(temp != 0){ // completed
+						pids.erase(pids.begin() + z);
+						--curprocs;
+						break;
 					}
 				}
-
 			}
-		//}
+		}
 	}
 	for(int z = 0;z < pids.size();++z){
 		int status;

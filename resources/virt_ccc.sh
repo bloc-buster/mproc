@@ -1,14 +1,5 @@
 #!/bin/bash
 
-#SBATCH -p Lewis 
-#SBATCH --mem 64G
-#SBATCH --time=0-01:00:00
-#SBATCH --account=climerlab
-
-#echo "ERROR! Overwrite ccc.sh with sbatch parameters for your local system, then comment out these lines."
-#exit 1
-
-
 if [[ "$#" -eq 2 ]]
 then
 	tempfolder=$1
@@ -42,15 +33,7 @@ then
 		echo -e "$text" >> $gmlfile
 	done
 	echo "]" >> $gmlfile
-	for f in ${files[@]}
-	do
-		if [[ ${##*\.} == "gml" ]]
-		then
-			file="$tempfolder$f"
-			command rm $file
-			#command rm "$tempfolder*.gml"
-		fi
-	done
+	#command rm -rf $tempfolder
 	exit 0
 elif [[ "$#" -ne 14 ]]
 then
@@ -98,5 +81,5 @@ outputfile=$outputfolder
 outputfile+=$count
 outputfile+=".gml"
 echo "ccc.sh running $runpath/ccc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop"
-srun "$runpath/ccc" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
+command "$runpath/ccc" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
 
