@@ -1,6 +1,9 @@
-# BLOCBUSTER (multiprocessing version of CCC)
-# CCC written by Sharlee Climer (climer@mail.umsl.edu)
-# multiprocessing version written by James Smith (jjs3k2@umsystem.edu)
+## BLOCBUSTER
+- (multiprocessing version of CCC)
+## CCC written by Sharlee Climer
+- (climer@mail.umsl.edu)
+## multiprocessing version written by James Smith
+- (jjs3k2@umsystem.edu)
 
 ## requirements:
 - g++ compiler
@@ -9,7 +12,7 @@
 - SLURM or virtual cloud instance with many processors
 - overwrite mproc.sh and ccc.sh with sbatch parameters relevant to your system
 
-##required files:
+## required files:
 - blocbuster.cpp (invokes main.sh or ccc.sh)
 - main.sh (invokes mproc.sh)
 - mproc.sh (invokes mproc.cpp)
@@ -47,90 +50,90 @@
 - if you need SNPs as columns, change setting in bloc.h
 
 ## compile (from within resources folder):
-srun make clean
-srun make
-(on each run, main.sh recompiles several files since it must rewrite params.h)
+- srun make clean
+- srun make
+- (on each run, main.sh recompiles several files since it must rewrite params.h)
 
 ## run:
-the program requires two runs
-	on the first run, the program generates partial files in the output folder
-	on the second run, the program gathers the partial files into a complete file
-first, run blocbuster with srun blocbuster or just ./blocbuster
-	blocbuster has required parameters
-	blocbuster then invokes main.sh
-	main.sh then invokes sbatch on mproc.sh
-	mproc.sh then invokes mproc.cpp with srun
-	the .sh files generate no new .sh batch files...instead, a single .sh file is reused with varying parameters
-wait for all jobs to complete
-then, run blocbuster with -z and no parameters
-read the SLURM output file from the most recent job to verify the checksum
-	if comparisons equals expected comparisons then the results are correct
+- the program requires two runs
+- - on the first run, the program generates partial files in the output folder
+- - on the second run, the program gathers the partial files into a complete file
+- first, run blocbuster with srun blocbuster or just ./blocbuster
+- - blocbuster has required parameters
+- - blocbuster then invokes main.sh
+- - main.sh then invokes sbatch on mproc.sh
+- - mproc.sh then invokes mproc.cpp with srun
+- - the .sh files generate no new .sh batch files...instead, a single .sh file is reused with varying parameters
+- wait for all jobs to complete
+- then, run blocbuster with -z and no parameters
+- read the SLURM output file from the most recent job to verify the checksum
+- - if comparisons equals expected comparisons then the results are correct
 
 ## different runs at same time:
-not possible - you must wait until each batch completes before starting another run
-after the first batch completes, you must perform the second run with ./blocbuster -z
-the -z option will read the params.h file containing the starting input parameters
-if you run blocbuster.cpp again on new files before running blocbuster -z on the first files, the params.h variables will be overwritten
-hence, you must run the program on one batch of files at a time
-a large file should not take much longer than an hour so waiting on each run should not take long
+- not possible - you must wait until each batch completes before starting another run
+- after the first batch completes, you must perform the second run with ./blocbuster -z
+- the -z option will read the params.h file containing the starting input parameters
+- if you run blocbuster.cpp again on new files before running blocbuster -z on the first files, the params.h variables will be overwritten
+- hence, you must run the program on one batch of files at a time
+- a large file should not take much longer than an hour so waiting on each run should not take long
 
 ## usage:
-(prepare files)
-./blocbuster input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) temp_output_folder (default log_files) semaphores (default 0) 
-	explanation - the temp_output_folder is not for the output.gml file, it's a temporary folder that stores partial gml files which are erased after the -z option
-(combine files)
-./blocbuster -z
-	explanation - program does not know when all jobs have finished...after all jobs complete, tell program to join partial files from output folder into a gml file
+- **prepare files**
+- ./blocbuster input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) temp_output_folder (default log_files) semaphores (default 0) 
+- - explanation - the temp_output_folder is not for the output.gml file, it's a temporary folder that stores partial gml files which are erased after the -z option
+- **combine files**
+- ./blocbuster -z
+- - explanation - program does not know when all jobs have finished...after all jobs complete, tell program to join partial files from output folder into a gml file
 
 ## explanation:
-input - a snps data file containing snp data
-output - name for the output file without path, the path is autogenerated, any file with same name will be overwritten
-threshold - decimal between 0 and 1
-numInd - number of individuals in the input file
-numSNPs - number of snps in the input file
-numHeaderRows - number of header rows at top of input file
-numheaderCols - number of non-data columns at front of each row
-(the rest of the parameters have defaults and may be left blank)
-granularity1 - integer for number of divisions into start table made by blocbuster.sh
-	- optionally 0...for non-hpc system, the program will not schedule SLURM batch processing, but will run multiprocessing
-granularity2 - integer for number of divisions into those divisions made by each run
-	- optionally 0...the program will not run multiprocessing, instead just splitting the file into partitions and launching a separate SLURM job on each
-max_simultaneous_processes - the number of processors found in each node on your HPC system, or the maximum processes at a time allowed on your system
-temp_output_files - a temporary folder, not for the output.gml file, small partial files are written to the output folder, the folder is autogenerated, any folder with same name will be removed
-semaphores - either 0 or 1, default 0, if 1 the program will reduce the number of output files by having multiple processes write to the same file which will be locked with semaphores, if 0 the program will let each process write to a separate file which will a large number of small files in the temp output folder
+- input - a snps data file containing snp data
+- output - name for the output file without path, the path is autogenerated, any file with same name will be overwritten
+- threshold - decimal between 0 and 1
+- numInd - number of individuals in the input file
+- numSNPs - number of snps in the input file
+- numHeaderRows - number of header rows at top of input file
+- numheaderCols - number of non-data columns at front of each row
+- (the rest of the parameters have defaults and may be left blank)
+- granularity1 - integer for number of divisions into start table made by blocbuster.sh
+- - optionally 0...for non-hpc system, the program will not schedule SLURM batch processing, but will run multiprocessing
+- granularity2 - integer for number of divisions into those divisions made by each run
+- - optionally 0...the program will not run multiprocessing, instead just splitting the file into partitions and launching a separate SLURM job on each
+- max_simultaneous_processes - the number of processors found in each node on your HPC system, or the maximum processes at a time allowed on your system
+- temp_output_files - a temporary folder, not for the output.gml file, small partial files are written to the output folder, the folder is autogenerated, any folder with same name will be removed
+- semaphores - either 0 or 1, default 0, if 1 the program will reduce the number of output files by having multiple processes write to the same file which will be locked with semaphores, if 0 the program will let each process write to a separate file which will a large number of small files in the temp output folder
 
 ## output:
-.gml file with results, do not put in the temp output folder
-log_files folder (erasable folder containing partial gml files)
-checksum files in log_files folder
-partial gml files in log_files folder
-SLURM output files (ends with .out)
+- .gml file with results, do not put in the temp output folder
+- log_files folder (erasable folder containing partial gml files)
+- checksum files in log_files folder
+- partial gml files in log_files folder
+- SLURM output files (ends with .out)
 
 ## example run:
-./blocbuster /home/username/data/acgt.txt /home/username/data/out.gml 0.7 10 1000 1 11 1 7 15 /home/username/data/temp_output_files
-(wait until all jobs have completed, then generate gml file)
-./blocbuster -z
+- ./blocbuster /home/username/data/acgt.txt /home/username/data/out.gml 0.7 10 1000 1 11 1 7 15 /home/username/data/temp_output_files
+- (wait until all jobs have completed, then generate gml file)
+- ./blocbuster -z
 
 ## checking results:
-after invoking -z, read the resulting SLURM output file (with the highest number)
-if the expected comparisons don't equal the comparisons, then the resulting gml file is wrong
-your selected granularity values may not have been a good fit for the input file size
-run the entire program again with lower granularity values
+- after invoking -z, read the resulting SLURM output file (with the highest number)
+- if the expected comparisons don't equal the comparisons, then the resulting gml file is wrong
+- your selected granularity values may not have been a good fit for the input file size
+- run the entire program again with lower granularity values
 
 ## troubleshooting:
-if the program ever throws an error, check if it forgot to release memory or semaphores
-type
-ipcs
-then, if your username shows up in the list, memory or semaphores were not released
-so, find the id that appears next to your username
-if your name appeared in the memory section, type
-ipcrm -m #
-where # = id
-if your name appeared in the semaphore section, type
-ipcrm -s #
-where # = id
-then, type ipcs again to make sure it was released
+- if the program ever throws an error, check if it forgot to release memory or semaphores
+- type
+- ipcs
+- then, if your username shows up in the list, memory or semaphores were not released
+- so, find the id that appears next to your username
+- if your name appeared in the memory section, type
+- ipcrm -m #
+- where # = id
+- if your name appeared in the semaphore section, type
+- ipcrm -s #
+- where # = id
+- then, type ipcs again to make sure it was released
 
 ## disclaimer:
-We are not responsible for any damages resulting from use of the product. Email one of the authors if you have questions.
+- We are not responsible for any damages resulting from use of the product. Email one of the authors if you have questions.
 
