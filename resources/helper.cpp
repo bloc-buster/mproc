@@ -37,17 +37,9 @@ int main(int argc, char ** argv)
   }
   if(semaphores==1){
     snprintf(checkfileName,100,"%s",argv[10]);
-    //fprintf(stdout,"helper using semaphores\n");
   } else {
     snprintf(checkfileName,100,"%s_%d",argv[10],getpid());
   }
-  /*FILE * checksum = fopen(checkfileName,"w");
-  if(checksum==NULL){
-          fprintf(stderr,"error - could not create checksum file\n");
-          exit(1);
-  }
-  fprintf(checksum,"%d",0);
-  fclose(checksum);*/
   int x1 = atoi(argv[11]) - 1;
   int x2 = atoi(argv[12]) - 1;
   int y1 = atoi(argv[13]) - 1;
@@ -99,14 +91,7 @@ int main(int argc, char ** argv)
       if(i >= j){
          continue;
       }
-      /*if(j <= i){//change to <
-         continue;
-      }*/
       ++comparisons;
-      //fprintf(stdout,"helper %d x1 %d x2 %d y1 %d y2 %d i %d j %d comparisons %d\n",getpid(),x1,x2,y1,y2,i,j,comparisons);
-	//continue;
-	//fprintf(stdout,"did not continue\n");
-
 
       //if (start1+i < start2+j) { // only compute upper diagonal of matrix
 
@@ -345,7 +330,7 @@ int main(int argc, char ** argv)
       if(numEdges > MAX_NUM_EDGES){
 	fatal("Too many edges printed out. Check MAX_NUM_EDGES in header file.");
       }
-    //} // end of for (int j = i+1) loop
+    // end of for (int j = i+1) loop
     }
   }
 
@@ -361,8 +346,6 @@ int main(int argc, char ** argv)
      	}
      	fclose(output);
   }
-
-  //fprintf(stdout,"helper %d x1 %d x2 %d y1 %d y2 %d\n",getpid(),x1,x2,y1,y2);
 
   if(comparisons > 0){
   	if(semaphores==0 || semWait()==1){
@@ -383,7 +366,7 @@ int main(int argc, char ** argv)
 		FILE * write;
 		if((write = fopen(checkfileName, "w"))==NULL){
 			fprintf(stderr,"error - could not write to checksum file\n");
-			//semSignal();
+			semSignal();
 			exit(1);
 		}
 		fprintf(write,"%llu",comps);

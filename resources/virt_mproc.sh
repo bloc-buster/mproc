@@ -1,20 +1,21 @@
 #!/bin/bash
 
 let numargs=$#
-
+# if second run
 if [[ "$#" -eq 1 ]]
 then
+	# get root path to next file
 	runpath=$1
-	shift
-	#echo "mproc.sh running $runpath/mproc"
 	command "$runpath/mproc" "true"
 	exit 0
+# otherwise validate number of args
 elif [[ "$#" -ne 17 ]]
 then
 	echo "args $#"
 	echo "usage: ./mproc.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity2 (default 7) max_simultaneous_processes (default 15) output_folder (default temp_output_files) snp1 snp2 step count xedge yedge"
 	exit 1
 fi
+# read command line args (from main.sh)
 inputfile=$1
 shift
 outputfile=$1
@@ -35,6 +36,7 @@ let maxprocesses=$1
 shift
 outputfolder=$1
 shift
+# partial gml file count
 let count=$1
 shift
 let step=$1
@@ -47,21 +49,20 @@ let ystart=$1
 shift
 let ystop=$1
 shift
+# root path to next file
 runpath=$1
 shift
-
-#echo "mproc.sh running mproc with granularity $granularity2 procs $maxprocesses count $count step $step xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
-
+# if multiprocessing
 if [[ $granularity2 -gt 0 ]]
 then
    args="$runpath/mproc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step $xstart $xstop $ystart $ystop $runpath"
-   #echo "mproc.sh running $args"
    command $args
+# otherwise in wrong file
 else
    echo "error - mproc.sh running ccc file"
    exit 1
 fi
-
+# check status of mproc.cpp
 let status=$?
 if [ "$status" != "0" ]
 then

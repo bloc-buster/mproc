@@ -1,31 +1,32 @@
 #!/bin/bash
 
+# get absolute path of main.sh
 root=$0
-#echo "main.sh file name $root"
+# build path for next file
 if grep -q "/" <<< $root
 then
+	# if $0 is a path then remove main.sh and / from path
 	runpath=${root%/*}
 else
+	# if $0 is just a file name without a forward slash then change working directory to .
 	runpath="."
 fi
-#echo "runpath $runpath"
-
+# if second run, build command for batch script mproc.sh
 if [[ "$#" -eq 1 ]]
 then
 	slurmoutfile=$1
 	params="--output=$slurmoutfile%j.out $runpath/mproc.sh $runpath" 
-	#echo "main.sh running sbatch $params"
 	command sbatch $params
-	#command sbatch --output="$slurmoutfile%j.out" "$runpath/mproc.sh" $runpath 
 	exit 0
+# otherwise validate number of args
 elif [[ "$#" -lt 7 || "$#" -gt 13 ]]
 then
 	echo "$#"
 	echo "usage: ./main.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) temp_output_folder (default log_files)"
-	echo "alternate (only for conclude): ./main.sh true"
+	echo "alternate (only for conclude): ./main.sh slurm-output-file-name"
 	exit 1
 fi
-
+# read command line args (from blocbuster.cpp)
 let numargs=$#
 inputfile=$1
 shift
@@ -72,7 +73,7 @@ then
 	semaphores=$1
 	shift
 fi
-
+# build params.h file that will save absolute paths and variables for second run
 params="
 #define num_ind $numind\n
 #define num_snps1 $numsnps\n
@@ -85,9 +86,12 @@ params="
 #define root $runpath/\n
 #define DATAKEYNAME \"$runpath/data.key\"\n
 "
+# save working directory prior to changing to directory of executables
 wd=$( pwd )
 command cd $runpath
+# save params.h into same folder as executables
 command echo -e $params > params.h
+# recompile mproc.cpp and helper.cpp, which import params.h as a dependency and require the latest settings
 sleep 1
 command srun make clean
 sleep 1
@@ -95,18 +99,23 @@ command srun make mproc
 sleep 1
 command srun make helper
 sleep 1
-#command srun make ccc
-#sleep 1
-command cd $wd
+# ccc.cpp does not require recompilation unless you change bloc.h
+command srun make ccc
+# check status of recompilations
 let status=$?
 if [ "$status" != "0" ]
 then
 	echo "compilation error - exiting"
 	exit 1
 fi
+# change back to working directory that program was run from
+command cd $wd
+# remove previous output folder
 command rm -rf $outputfolder
 sleep 1
+# make new output folder
 command mkdir $outputfolder
+# check status of new output folder
 let status=$?
 if [ "$status" != "0" ]
 then
@@ -114,7 +123,9 @@ then
 	exit 1
 fi
 sleep 1
+# make empty output file
 command touch $outputfile
+# check status of output file
 let status=$?
 if [ "$status" != "0" ]
 then
@@ -122,17 +133,22 @@ then
 	exit 1
 fi
 sleep 1
-
+# begin building SNP partitions for batch processing
+# compute batch processing step value
 let step=$(( numsnps / granularity1 ))
+# do not allow zero or negative step values
 if [[ $step -lt 1 ]]
 then
 	let step=1
 fi
-
+# arrays for indices of SNP partitions
 x_start=()
 x_stop=()
 y_start=()
 y_stop=()
+# compute indices of SNP partitions starting from 1 for easy validation (C++ files must subtract one from them)
+# in a SNPs x SNPs matrix, x and y are the same
+# for each SNP x, for each SNP y, add SNP pair to arrays unless x and y are the same SNP or have already added them with x and y reversed
 for (( x = 1; x <= $granularity1; x += 1 ))
 do
 	for (( y = 1; y <= $granularity1; y += 1 ))
@@ -159,20 +175,20 @@ do
 		fi
 	done
 done
-
+# launch a batch script for each partition
 let count=1
 for (( x = 0; x < ${#x_start[@]}; x += 1 ))
 do
+	# if multiprocessing, invoke mproc.sh
 	if [[ $granularity2 -gt 0 ]]
 	then
-		#echo "main.sh running mproc.sh with granularity $granularity2 step $step count $count x-start ${x_start[$x]} x-stop ${x_stop[$x]} y-start ${y_start[$x]} y-stop ${y_stop[$x]}"
-		#echo "parameters $slurmoutfile $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]}"
 		args="--output=$slurmoutfile $runpath/mproc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath"
-		#echo "main.sh running sbatch $args"
 		command sbatch $args
+	# if ony batch processing, invoke ccc.sh
 	else
 		command sbatch --output=$slurmoutfile "$runpath/ccc.sh" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $outputfolder $count ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath
 	fi
+	# increment partition counter
 	let count+=1
 done
 

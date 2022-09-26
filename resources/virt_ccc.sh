@@ -1,7 +1,9 @@
 #!/bin/bash
 
+# if second run
 if [[ "$#" -eq 2 ]]
 then
+	# combine partial gml files into single gml file
 	tempfolder=$1
 	shift
 	gmlfile=$1
@@ -33,14 +35,24 @@ then
 		echo -e "$text" >> $gmlfile
 	done
 	echo "]" >> $gmlfile
-	#command rm -rf $tempfolder
+	# remove partial gml files in temp folder
+	for f in ${files[@]}
+	do
+		if [[ ${f##*\.} == "gml" ]]
+		then
+			file="$tempfolder$f"
+			command rm $file
+		fi
+	done
 	exit 0
+# otherwise validate number of args
 elif [[ "$#" -ne 14 ]]
 then
 	echo "args $#"
 	echo "usage: ./ccc.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols output_folder (default temp_output_files) count x1 x2 y1 y2"
 	exit 1
 fi
+# read command line args (from blocbuster.cpp)
 let numargs=$#
 inputfile=$1
 shift
@@ -58,6 +70,7 @@ let numheadercols=$1
 shift
 outputfolder=$1
 shift
+# partial gml file count
 let count=$1
 shift
 let xstart=$1
@@ -68,18 +81,15 @@ let ystart=$1
 shift
 let ystop=$1
 shift
+# root path to next file
 runpath=$1
 shift
-
-#echo "ccc.sh running ccc with count $count xstart $xstart xstop $xstop ystart $ystart ystop $ystop"
-
-# remove .gml extension from output file, append number, then reappend .gml
+# build name for partial gml file
+# remove .gml extension from output gml file, append number, then reappend .gml
 # problem if output file does not have .gml extension
-#outputfile=${outputfile%.gml}
 outputfile=$outputfolder
-#outputfile+="/"
 outputfile+=$count
 outputfile+=".gml"
-echo "ccc.sh running $runpath/ccc $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop"
+# run partial blocbuster
 command "$runpath/ccc" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $xstart $xstop $ystart $ystop
 

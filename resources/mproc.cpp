@@ -38,7 +38,7 @@ void format(char*, char**, char**, char**, double**, double**, int, int, int, in
 void checkConstants(); // check validity of constants in bloc.h
 
 /****/
-char * OUTPUT_FOLDER = (char *)"../temp_output_files";
+char * OUTPUT_FOLDER;
 /*****************/
 
 
@@ -104,16 +104,12 @@ int main(int argc, char ** argv)
 				fprintf(output, "\tnode \n\t[\n\tid %d \n\t]\n", j);
 		}
 		sleep(1);
-		//int gmlcount = 0;
 		rewinddir(dp);
 		for(entry=readdir(dp);entry != NULL;entry=readdir(dp)){
 			char* filename = entry->d_name;
 			if(strcmp(filename,".")==0 || strcmp(filename,"..")==0 || strstr(filename,"checksum") || strstr(filename,".out")){
 				continue;
 			}
-			/*if(strstr(filename,".gml")){
-				++gmlcount;
-			}*/
 			char buffer[200];
 			char filepath[200];
 			sprintf(filepath,"%s/%s",OUTPUT_FOLDER,filename);
@@ -133,7 +129,6 @@ int main(int argc, char ** argv)
 		sleep(1);
 		fclose(output);
 		// remove all files
-		
 		sleep(1);
 		rewinddir(dp);
 		for(entry=readdir(dp);entry != NULL;entry=readdir(dp)){
@@ -147,13 +142,6 @@ int main(int argc, char ** argv)
 				fprintf(stderr,"error - could not remove file %s\n",filepath);
 			}
 		}
-		sleep(1);
-		int status = rmdir(OUTPUT_FOLDER);
-		if(status != 0){
-			printf("error - could not remove output folder\n");
-		}
-		
-		//printf("total processes %d\n",gmlcount);
 		exit(exit_status);
         } else if (argc < 8 || argc > 18){
 		fprintf(stderr,"args %d\n",argc);
@@ -539,9 +527,7 @@ int main(int argc, char ** argv)
 	}
 	int nodecount = atoi(argv[11]);
 	char checkfileName[100];
-	//sprintf(checkfileName,"%s/checksum",OUTPUT_FOLDER);
 	sprintf(checkfileName,"%schecksum_%d",OUTPUT_FOLDER,nodecount);
-	//printf("mproc created checksum file %s\n", checkfileName);
 	if(semaphores==1){ // read from params.h
 	   FILE * checksum = fopen(checkfileName,"w");
 	   if(checksum==NULL){
@@ -567,7 +553,7 @@ int main(int argc, char ** argv)
 	vector<int> y2;
 	char runpath[150];
 	sprintf(runpath,"%s\0",argv[17]);
-	//fprintf(stdout,"mproc in %s out %s thresh %f ind %d snps %d headrows %d columns %d gran %d maxprocs %d out %s count %d step %d x1 %d x2 %d y1 %d y2 %d\n",argv[1],argv[2],thresh,numInd,numSnps,numheadrows,numheadcols,granularity,maxprocesses,OUTPUT_FOLDER,nodecount,step1,xstart,xstop,ystart,ystop);
+	// build indices
 	for(int x = 1; x <= granularity; ++x){
 		for(int y = 1; y <= granularity; ++y){
 			int x1val;
@@ -597,9 +583,6 @@ int main(int argc, char ** argv)
 			y2.push_back(y2val);
 		}
 	}
-	//for(int x = 0; x < x1.size(); ++x){
-	//	fprintf(stdout,"mproc x1 %d x2 %d y1 %d y2 %d\n",x1[x],x2[x],y1[x],y2[x]);
-	//}
 	char arg0[20];
 	char arg1[20];
 	char arg2[20];
@@ -645,7 +628,6 @@ int main(int argc, char ** argv)
 			_exit(1);
 		}
 		pids.push_back(pid);
-                //fprintf(stdout,"mproc %d step %d x1 %d x2 %d y1 %d y2 %d\n",pid,step2,x1[x],x2[x],y1[x],y2[x]);
 		++curprocs;
 		if(curprocs >= maxprocesses){
 			while(curprocs >= maxprocesses){

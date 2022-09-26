@@ -106,38 +106,20 @@ int main(int argc,char ** argv){
 			++options;
 		// second run, merge partial gml files
 		} else if(ch=='z'){
-			// path to params.h configuration file
-			/*
-			char paramfile1[100];
-			bool found = false;
-                        for (int i = strlen(root) - 1; i >= 0; i--) {
-                           if (root[i] == '/') {
-			      found = true;
-		              strncpy(paramfile1,root,i+1);
-			      paramfile1[i+1] = '\0';
-                              break;
-                           }
-	                }
-			fprintf(stdout,"paramfile1 %s\n",paramfile1);
-			*/
+			// build absolute path to params.h configuration file, main.sh, and ccc.sh
 			char paramfile[150];
 			char mainfile[150];
 			char cccfile[150];
-			//if(strstr(root1,"/")){
-			   sprintf(paramfile,"%sparams.h\0",root1);
-			   sprintf(mainfile,"%smain.sh\0",root1);
-			   sprintf(cccfile,"%sccc.sh\0",root1);
-			/*} else {
-			   sprintf(paramfile,"params.h\0");
-			   sprintf(mainfile,"main.sh\0");
-			   sprintf(cccfile,"ccc.sh\0");
-			}*/
+			sprintf(paramfile,"%sparams.h\0",root1);
+			sprintf(mainfile,"%smain.sh\0",root1);
+			sprintf(cccfile,"%sccc.sh\0",root1);
+			// validate able to read params file
 			FILE * file = fopen(paramfile,"r");
 			if(file==NULL){
 				printf("error - could not read params file\n");
 				exit(1);
 			}
-			printf("params %s main %s ccc %s\n",paramfile,mainfile,cccfile);
+			// read variables and paths from params file
 			char buffer[200];
 			char * token;
 			char * gmlfile;
@@ -148,24 +130,30 @@ int main(int argc,char ** argv){
 			while(fgets(buffer,1000,file) != NULL){
 				token = strtok(buffer," ");
 				while(token != NULL){
+					// absolute path to gml file
 					if(strcmp(token,"gml_file")==0){
 						token = strtok(NULL," ");
 						gmlfile = strdup(token);
 						break;
+					// absolute path to temp output folder
 					} else if(strcmp(token,"temp_folder")==0){
 						token = strtok(NULL," ");
 						tempfolder = strdup(token);
 						break;
+					// granularity 1 value
 					} else if(strcmp(token,"granularity1")==0){
 						token = strtok(NULL," ");
 						granularity1 = strdup(token);
 						break;
+					// granularity 2 value
 					} else if(strcmp(token,"granularity2")==0){
 						token = strtok(NULL," ");
 						granularity2 = strdup(token);
 						break;
+					// absolute root path to executables
 					} else if(strcmp(token,"root")==0){
 						token = strtok(NULL," ");
+						// current working directory may have changed, but previous absolute path was saved and will still work
 						prevaddress = strdup(token);
 						break;
 					}
@@ -173,22 +161,30 @@ int main(int argc,char ** argv){
 				}
 			}
 			fclose(file);
-			prevaddress[strlen(prevaddress) - 1] = '\0';//remove newline
+			// remove newline from end of root executable path
+			prevaddress[strlen(prevaddress) - 1] = '\0';
+			// build command
 			char command[150];
+			// if using multiprocessing
 			if(atoi(granularity2) > 0){
+				// combined batch processing (SLURM) + multiprocessing
+				// remove newline from end of temp output folder path with strtok, specifies path for slurm output file
 				if(atoi(granularity1) > 0){
 					sprintf(command,"srun %smain.sh %s", prevaddress, strtok(tempfolder,"\n"));
+				// only multiprocessing (non-HPC, probable Linux cloud virtual machine)
+				// tempfolder parameter not used by next file except to identify number of args
 				} else {
 					sprintf(command,"%svirt_main.sh %s", prevaddress, strtok(tempfolder,"\n"));
 				}
+			// otherwise only batch processing
 			} else {
+				// remove newline from end of temp output folder path
 				char * temp = strtok(tempfolder,"\n");
 				temp[strlen(temp) - 1] = '\0';
-				sprintf(command,"sbatch --output=%s%%j.out\" %s %s\" %s", temp, cccfile,temp, strtok(gmlfile,"\n"));
+				sprintf(command,"sbatch --output=%s%%j.out\" %s %s\" %s", temp, cccfile, temp, strtok(gmlfile,"\n"));
 			}
-			fprintf(stdout,"running command\n");
-			fprintf(stdout,"%s\n",command);
 			system(command);
+			// attempted to return fail if checksum incorrect
 			//FILE* f = popen("echo $?", "r");
 			//int errcode;
 			//fscanf(f,"%d",&errcode);
@@ -351,7 +347,6 @@ int main(int argc,char ** argv){
 		// virtual cloud machine, only multiprocessing
 		sprintf(command,"%svirt_main.sh %s %s %f %d %d %d %d %d %d %d %s %d",root1,inputfile,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
 	}
-	fprintf(stdout,"blocbuster.cpp running command %s\n",command);
 	system(command);
 	return 0;
 }
