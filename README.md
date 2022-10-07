@@ -34,10 +34,9 @@
 - virt_ccc.sh
 
 ## project structure:
+- Mproc is the multiprocessed version of the CCC module from the BlocBuster program. The original BlocBuster program is stored in a zip file in the bin folder. To run the entire BlocBuster pipeline, download the zip file and use Mproc in place of the CCC module (the first module of the pipeline).
 - The project is stored in the resources folder. We require that all output be stored outside of the resources folder. 
 - The output file is automatcially placed in the same folder as the input file, and the output folder containing log files will be placed in that folder as well. Any attempt to read from or write to the folder containing the executables will result in an error.
-
-## project structure:
 - project folder (name of your choice)
 - - resources (folder)
 - - - all required executable files are stored here

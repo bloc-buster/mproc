@@ -184,12 +184,6 @@ int main(int argc,char ** argv){
 				sprintf(command,"sbatch --output=%s%%j.out\" %s %s\" %s", temp, cccfile, temp, strtok(gmlfile,"\n"));
 			}
 			system(command);
-			// attempted to return fail if checksum incorrect
-			//FILE* f = popen("echo $?", "r");
-			//int errcode;
-			//fscanf(f,"%d",&errcode);
-			//pclose(f);
-			//printf("returning code %d\n",errcode);
 			return 0;
 		}
 	}
