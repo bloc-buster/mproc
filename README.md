@@ -34,7 +34,7 @@
 - virt_ccc.sh
 
 ## project structure:
-- Mproc is the multiprocessed version of the CCC module from the BlocBuster program. The original BlocBuster program is stored in a zip file in the bin folder. To run the entire BlocBuster pipeline, download the zip file and use Mproc in place of the CCC module (the first module of the pipeline).
+- Mproc is the multiprocessed version of the CCC module from the BlocBuster program. The original BlocBuster program is stored in a zip file in the "project" folder. To run the entire BlocBuster pipeline, download the zip file and use Mproc in place of the CCC module (the first module of the pipeline).
 - The project is stored in the resources folder. We require that all output be stored outside of the resources folder. 
 - The output file is automatcially placed in the same folder as the input file, and the output folder containing log files will be placed in that folder as well. Any attempt to read from or write to the folder containing the executables will result in an error.
 - project folder (name of your choice)
@@ -109,7 +109,8 @@
 - SLURM output files (ends with .out)
 
 ## example run:
-- ./blocbuster /home/username/data/acgt.txt /home/username/data/out.gml 0.7 10 1000 1 11 1 7 15 /home/username/data/temp_output_files
+- the example file from the data folder has 100 snps and 315 individuals
+- ./blocbuster /home/username/data/example_100_315.txt /home/username/data/out.gml 0.7 315 100 0 0 1 3 5 /home/username/data/temp_output_files
 - (wait until all jobs have completed, then generate gml file)
 - ./blocbuster -z
 
