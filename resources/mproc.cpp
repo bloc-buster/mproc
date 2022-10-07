@@ -159,8 +159,6 @@ int main(int argc, char ** argv)
 
 	checkConstants(); // check validity of constants defined in bloc.h
 
-	//FILE *logfile; // log file that records screen output
-
 	char logfileName[200]; // hold name of logfile
 	char base[100]; // base for logfile name
 	const char logSuffix[] = ".bloc.log"; // suffix for logfile name
@@ -179,27 +177,11 @@ int main(int argc, char ** argv)
 
 	sprintf(logfileName, "%s%s", base, logSuffix); // string together file name
 
-	//if(LOG_FILE) 
-		//cout << "Screen output will be recorded in '" << logfileName <<"'.\n" << endl;
-
-	//if ((logfile = fopen(logfileName, "w")) == NULL)
-		//fatal("Log file could not be opened.\n");
-
-	/**if (LOG_FILE) {
-		fprintf(logfile, "\nCommand line arguments: \n\t");
-		for (int i = 0; i < argc; i++)
-			fprintf(logfile, "%s ", argv[i]);
-		fprintf(logfile, "\n\n");
-	}**/
-
 	float thresh = atof(argv[3]);
 
 	// changed default threshold, so this is just a reminder
 	if ((thresh < 0.7-TOL) || (thresh > 0.7+TOL))
 		warning("Default threshold value is 0.7.");
-
-	//if(!TWONODE)
-	//fatal("Check results are correct when only one node is output per SNP.");
 
 	char strng[200]; // temporary string storage
 
@@ -213,32 +195,18 @@ int main(int argc, char ** argv)
 	if (ROWS_R_SNPS == 1)
 		cout << "\n***Important: Assumed rows represent SNPs and \n   columns represent individuals in input file.***\n\n" << endl;
 
-	/**if(LOG_FILE) {
-		if(ROWS_R_SNPS == 0)
-			fprintf(logfile, "\n***Important: Assumed rows represent individuals and \n   columns represent SNPs in input file.***\n\n\n");
-
-		if(ROWS_R_SNPS == 1)
-			fprintf(logfile, "\n***Important: Assumed rows represent SNPs and \n   columns represent individuals in input file.***\n\n\n");
-	}**/
-
 	if(TWONODE) {
 		cout << "Each SNP will be represented by two nodes in output graph." << endl;
 
-		//if(LOG_FILE)
-			//fprintf(logfile, "Each SNP will be represented by two nodes in output graph.\n");
 	}
 
 	if(!TWONODE) {
 		cout << "Each SNP will be represented by one node in output graph." << endl;
 
-		//if(LOG_FILE)
-			//fprintf(logfile, "Each SNP will be represented by one node in output graph.\n");
 	}
 
 	if(FREQ) {
 		cout << "Frequencies used in computations with a weight of " << FREQWT << ".\n" << endl;
-		//if(LOG_FILE)
-			//fprintf(logfile, "Frequencies used in computations with a weight of %f.\n\n", FREQWT);
 	}
 
 	int numInd = atoi(argv[4]); // number of individuals
@@ -261,24 +229,6 @@ int main(int argc, char ** argv)
 	int end1 = numSnps;
 	int start2 = 1;
 	int end2 = numSnps;
-
-	// change values if different values given on command line
-	/**
-	if(argc == 12) { 
-		start1 = atoi(argv[8]);
-		end1 = atoi(argv[9]);
-		start2 = atoi(argv[10]);
-		end2 = atoi(argv[11]);
-	}
-
-	if (argc == 12) {
-		cout << "First SNP will range between " << start1 << " and " << end1 << endl;
-		cout << "Second SNP will range between " << start2 << " and " << end2 << endl;
-
-		if(LOG_FILE)
-			fprintf(logfile,"First SNP will range between %d and %d;\nsecond SNP will range between %d and %d.\n\n",start1, end1, start2, end2);
-	}
-**/
 
 	// compute only upper diagonal edges, so check that first set has starting number that 
 	// is no more than the starting point for second set
@@ -340,13 +290,9 @@ int main(int argc, char ** argv)
 		numheadcols = atoi(argv[7]);
 	}
 
-	//if(LOG_FILE) 
-		//fprintf(logfile, "%d individuals and %d SNPs in entire dataset.\nThreshold of %f used.\n", numInd, numSnps, thresh);
 
 	if(PRINT_EDGE_IDS) {
 		cout << "\nIMPORTANT: Edge IDs will be appended to 'edgeList.txt' for each edge produced.\n\tThe edge ID = (numNodes * i) + j, where i = source and j = target.\n" << endl;
-		//if(LOG_FILE)
-			//fprintf(logfile, "\nIMPORTANT: Edge IDs will be appended to 'edgeList.txt' for each edge produced.\n\tThe edge ID = (numSNPs * i) + j, where i = source and j = target.\n\n");
 	}
 
 	if (numInd > MAX_NUM_INDIVIDUALS)
@@ -432,7 +378,6 @@ int main(int argc, char ** argv)
 			allele[i][j] = '0';
 
 	// read in and format input data (close logfile first)
-	//fclose(logfile);
 
 	// format function will assemble data in the matrices and 
 	// writes out the number of missing values
@@ -461,35 +406,10 @@ int main(int argc, char ** argv)
 
 	/*********** end ***********/
 
-	//reopen logfile
-	//if ((logfile = fopen(logfileName, "a")) == NULL)
-		//fatal("Log file could not be opened.\n");
-
 	cout << "\nComputing CCC values..." << endl;
 
-	//if(LOG_FILE)
-		//fprintf(logfile, "\nComputing CCC values...\n");
-
 	// write out nodes to output file
-	//FILE *output;
 	FILE *edgefile; // use for edge IDs if PRINT_EDGE_IDS is set to 1
-
-	//if ((output = fopen(argv[2], "w")) == NULL)
-		//fatal("Output file could not be opened.\n");
-
-	/**
-	if (TWONODE) { // 2 nodes for each SNP
-		fprintf(output, "Graph with %d nodes. \ngraph\n[\n", numNodes);
-		for (int j = 1; j <= numNodes; j++)
-			fprintf(output, "\tnode \n\t[\n\tid %d \n\t]\n", j);
-	}
-
-	else {
-		fprintf(output, "Graph with %d nodes. \ngraph\n[\n", numSnps);
-		for (int j = 1; j <= numSnps; j++)
-			fprintf(output, "\tnode \n\t[\n\tid %d \n\t]\n", j);
-	}
-	**/
 
 	float maxBloc = 0.0; // initialize for finding max and min values
 	float minBloc = 1.0;
@@ -662,10 +582,6 @@ int main(int argc, char ** argv)
 
 	/********* end ***************/ 
 
-	//fprintf(output, "]\n"); // print closing bracket
-
-	//fclose(output);
-
 	if(PRINT_EDGE_IDS) {
 		if ((edgefile = fopen("edgeList.txt", "a")) == NULL)
 			fatal("'edgeList.txt' file could not be opened.\n");
@@ -682,12 +598,6 @@ int main(int argc, char ** argv)
 	if (minBloc < 0)
 		minBloc = 0;
 
-	//cout << "\nCCCmax values range from " << minBloc << " to " << maxBloc << endl;
-	/** cout << numEdges << " Custom correlations with values >= " << thresh << endl; **/
-
-	/** if(LOG_FILE)
-	  fprintf(logfile, "\n%d Custom correlations with values >= %f.\n", numEdges, thresh); **/
-
 	if (PRINTNUMEDGES) { // print number of edges to "numEdges.txt"
 		FILE *edgeFile;
 
@@ -703,7 +613,6 @@ int main(int argc, char ** argv)
 		if ((edgeFile = fopen("numEdges.txt", "a")) == NULL)
 			fatal("'numEdges.txt' file could not be opened.\n");
 
-		/** fprintf(edgeFile,"%d\t%.5f\n",numEdges, maxBloc); **/
 		fclose(edgeFile);
 	}
 
@@ -712,11 +621,6 @@ int main(int argc, char ** argv)
 
 	double compTime;
 	compTime = t.timeVal();
-
-	//if(LOG_FILE)
-		//fprintf(logfile, "\nTimer stopped.\n%f seconds.\n", compTime);
-
-	//fclose(logfile);
 
 	return 0;
 }
@@ -753,13 +657,6 @@ void format(char* filename, char** data1, char** data2, char** allele, double** 
 		numInRows = numSnps;
 		numInCols = numInd;
 	}
-
-	// open logfile
-	//if ((logfile = fopen(logfileName, "a")) == NULL)
-		//fatal("Log file could not be opened.\n");
-
-	//if(LOG_FILE)
-		//fprintf(logfile, "Assumed %d header rows and %d header columns in input file.\n\nReading in data...\n", numheadrows, numheadcols); 
 
 	cout << "\nReading in data..." << endl;
 
@@ -802,7 +699,6 @@ void format(char* filename, char** data1, char** data2, char** allele, double** 
 				fatal("Input file is missing data");
 
 			fscanf(input, "%s", strng);
-			//cout << i << ", " << j << ": " << strng << endl;
 
 			ascii1 = strng[0]; // find ascii value of first char
 
@@ -841,7 +737,6 @@ void format(char* filename, char** data1, char** data2, char** allele, double** 
 				fatal("Input file is missing data");
 
 			fscanf(input, "%s", strng);
-			//cout << i << ", " << j << ": " << strng << endl;
 
 			ascii1 = strng[0]; // find ascii value of first char
 
@@ -908,8 +803,6 @@ void format(char* filename, char** data1, char** data2, char** allele, double** 
 							if (ascii2 != (int)allele[currentSNP][0])
 								allele[currentSNP][1] = (char)ascii2; // found second allele
 
-						//cout << (char)ascii1 << (char)ascii2 << " "; 
-						//cout << allele[currentSNP][0] << allele[currentSNP][1] << endl;
 					}
 		}
 	}
@@ -930,9 +823,6 @@ void format(char* filename, char** data1, char** data2, char** allele, double** 
 			oneAllele++;
 
 	cout << oneAllele << " snps have only one allele in dataset." << endl;
-
-	//if(LOG_FILE)
-		//fprintf(logfile, "%d snps have only one allele in dataset.\n", oneAllele);
 
 	if (VERBOSE) {
 		cout << "Alleles: " << endl;
@@ -982,7 +872,6 @@ void format(char* filename, char** data1, char** data2, char** allele, double** 
 
 		for (int j = 0; j < numInCols; j++) {
 			fscanf(input, "%s", strng);
-			//cout << i << ", " << j << ": " << strng << endl;
 
 			ascii1 = strng[0]; // find ascii value of first char
 
@@ -1090,7 +979,6 @@ void format(char* filename, char** data1, char** data2, char** allele, double** 
 									}
 			}
 
-			//cout << currentSNP << ", start2 = " << start2 << ", end2 = " << end2 << endl;
 
 			// record if in second set of SNPs
 			if((currentSNP >= start2) && (currentSNP <= end2)) { // record value
@@ -1194,17 +1082,11 @@ void format(char* filename, char** data1, char** data2, char** allele, double** 
 
 	for (int i = 0; i < numSnps2; i++) {
 
-		//if (printFreq)  // removed as only print out first set of frequencies
-		//fprintf(tempFreq, "%d", i+1);
-
 		for (int j = 0; j < 2; j++) {
 			freq2[i][j] /= 2 * haveGenotype2[i]; // divide by 2*number without missing
 
 			if(VERBOSE) 
 				cout << freq2[i][j] << endl;
-
-			//if (printFreq)
-			//fprintf(tempFreq, " %c %f", allele[i][j], freq[i][j]);
 
 			// calculate frequency factor
 			freq2[i][j] = 1 - (freq2[i][j] / FREQWT); 
@@ -1213,8 +1095,6 @@ void format(char* filename, char** data1, char** data2, char** allele, double** 
 				cout << freq2[i][j] << endl;
 		}
 
-		//if (printFreq)
-		//fprintf(tempFreq, "\n");
 	}
 
 	if (printFreq)
@@ -1256,10 +1136,6 @@ void format(char* filename, char** data1, char** data2, char** allele, double** 
 
 	cout << totalNumMissing1 << " and " << totalNumMissing2 << " missing values in first and second SNP sets, respectively." << endl;
 
-	//if(LOG_FILE)
-		//fprintf(logfile, "%d and %d missing values in first and second SNP sets, respectively.\n", totalNumMissing1, totalNumMissing2); 
-
-	//fclose(logfile);
 
 }
 
@@ -1273,9 +1149,6 @@ void checkConstants()
 
 	if((SCREEN_INPUT != 0) && (SCREEN_INPUT != 1))
 		fatal("SCREEN_INPUT value in bloc.h should be zero or one.");
-
-	//if((LOG_FILE != 0) && (LOG_FILE != 1))
-		//fatal("LOG_FILE value in bloc.h should be zero or one.");
 
 	if((QUIET != 0) && (QUIET != 1))
 		fatal("QUIET value in bloc.h should be zero or one.");

@@ -53,26 +53,12 @@ int main(int argc, char ** argv)
   vector<string> results;
   char result[100];
   unsigned long long int comparisons = 0;
-  //char logfileName[200]; // hold name of logfile
-  //sprintf(logfileName,"%s",argv[12]);
 
   getShm();
   if(semInit(SEMNAME,MAXSEMS) == -1){
 	fprintf(stderr,"error - could not initialize semaphore\n");
 	exit(1);
   }
-
-  //FILE *logfile; // log file that records screen output
-
-  //if ((logfile = fopen(logfileName, "w")) == NULL)
-      //fatal("Log file could not be opened.\n");
-
-  // write out nodes to output file
-  //FILE *output;
-  //FILE *edgefile; // use for edge IDs if PRINT_EDGE_IDS is set to 1
-
-  //if ((output = fopen(outputfileName, "w")) == NULL)
-      //fatal("Output file could not be opened.\n");
 
   // compute correlations and output edges
 
@@ -93,8 +79,6 @@ int main(int argc, char ** argv)
       }
       ++comparisons;
 
-      //if (start1+i < start2+j) { // only compute upper diagonal of matrix
-
       // initialize values
       for (int row = 0; row < 4; row++)
 	for (int col = 0; col < 4; col++)
@@ -111,7 +95,6 @@ int main(int argc, char ** argv)
 	for (int col = 0; col < 3; col++)
 	  noMissing += (int)tally[row][col];
       
-      //cout << noMissing << " relationships" << endl;
       
       // print out warning if flag set and too few relationships
       if(WARN_MISS && (noMissing < minNoMissing)) {
@@ -119,8 +102,6 @@ int main(int argc, char ** argv)
 	cout << noMissing << " relationships without missing data." << endl;
 	warning ("Correlation is based on too few relationships.");
 
-	//if(LOG_FILE)
-	  //fprintf(logfile, "SNPs %d and %d have %d relationships without missing data.\nWarning: Correlation is based on too few relationships.\n\n", start1+i+1, start2+j+1, noMissing);
       }
 
       // adjust proportionate contributions of each relationship
@@ -215,15 +196,8 @@ int main(int argc, char ** argv)
 
 	  sprintf(result, "\tedge\n\t[\n\tsource %d\n\ttarget %d\n\tweight %f\n\t]\n", start1+i+1, start2+j+1, weight);
           results.push_back(result);
-	  //fprintf(output, "\tedge\n\t[\n\tsource %d\n\ttarget %d\n\tweight %f\n\t]\n", i,j,weight);// changed from start1+i+1, start2+j+1, weight);
 	  numEdges++;
 
-	  /**if(PRINT_EDGE_IDS) {
-	    if ((edgefile = fopen("edgeList.txt", "a")) == NULL)
-	      fatal("'edgeList.txt' file could not be opened.\n");
-	    fprintf(edgefile, "%d ", (start1+i+1)*numNodes + (start2+j+1));
-	    fclose(edgefile);
-	  }**/
 	}
 
       if (TWONODE) {
@@ -233,23 +207,13 @@ int main(int argc, char ** argv)
 	  float weight = (ll * 4.5);
 	  if ((weight > 1.0 + TOL) || (weight < 0.0 - TOL)) {
 	    cout << "\nWarning: CCC value is " << weight << endl;
-	    //fatal("Invalid CCC value");
 
-	    //if(LOG_FILE)
-	      //fprintf(logfile, "\nWarning: CCC value is %f\n", weight);
 	  }
 
 	  sprintf(result, "\tedge\n\t[\n\tsource %d\n\ttarget %d\n\tweight %f\n\t]\n", start1+i+1, start2+j+1, weight);
           results.push_back(result);
-	  //fprintf(output, "\tedge\n\t[\n\tsource %d\n\ttarget %d\n\tweight %f\n\t]\n", start1+i+1, start2+j+1, weight);
 	  numEdges++;	
 
-	  /**if(PRINT_EDGE_IDS) {
-	    if ((edgefile = fopen("edgeList.txt", "a")) == NULL)
-	      fatal("'edgeList.txt' file could not be opened.\n");
-	    fprintf(edgefile, "%d ", (start1+i+1)*numNodes + (start2+j+1));
-	    fclose(edgefile);
-	  }**/
 	}
 
 	if(lh > thresh - TOL) { 
@@ -257,24 +221,14 @@ int main(int argc, char ** argv)
 	  float weight = (lh * 4.5);
 	  if ((weight > 1.0 + TOL) || (weight < 0.0 - TOL)) {
 	    cout << "\nWarning: CCC value is " << weight << endl;
-	    //fatal("Invalid CCC value");
 	    
 	    
-	    //if(LOG_FILE)
-	      //fprintf(logfile, "\nWarning: CCC value is %f\n", weight);
 	  }
 
 	  sprintf(result, "\tedge\n\t[\n\tsource %d\n\ttarget %d\n\tweight %f\n\t]\n", start1+i+1, start2+j+numSnps+1, weight);
           results.push_back(result);
-	  //fprintf(output, "\tedge\n\t[\n\tsource %d\n\ttarget %d\n\tweight %f\n\t]\n", start1+i+1, start2+j+numSnps+1, weight);
 	  numEdges++;
 
-	  /**if(PRINT_EDGE_IDS) {
-	    if ((edgefile = fopen("edgeList.txt", "a")) == NULL)
-	      fatal("'edgeList.txt' file could not be opened.\n");
-	    fprintf(edgefile, "%d ", (start1+i+1)*numNodes + (start2+j+numSnps+1));
-	    fclose(edgefile);
-	  }**/
 	}
 
 	if(hl > thresh - TOL) { 
@@ -282,23 +236,13 @@ int main(int argc, char ** argv)
 	  float weight = (hl * 4.5);
 	  if ((weight > 1.0 + TOL) || (weight < 0.0 - TOL)) {
 	    cout << "\nWarning: CCC value is " << weight << endl;
-	    //fatal("Invalid CCC value");
 
-	    //if(LOG_FILE)
-	      //fprintf(logfile, "\nWarning: CCC value is %f\n", weight);
 	  } 
 
 	  sprintf(result, "\tedge\n\t[\n\tsource %d\n\ttarget %d\n\tweight %f\n\t]\n", start1+i+numSnps+1, start2+j+1, weight);
           results.push_back(result);
-	  //fprintf(output, "\tedge\n\t[\n\tsource %d\n\ttarget %d\n\tweight %f\n\t]\n", start1+i+numSnps+1, start2+j+1, weight);
 	  numEdges++;
 
-	  /**if(PRINT_EDGE_IDS) {
-	    if ((edgefile = fopen("edgeList.txt", "a")) == NULL)
-	      fatal("'edgeList.txt' file could not be opened.\n");
-	    fprintf(edgefile, "%d ", (start1+i+numSnps+1)*numNodes + (start2+j+1));
-	    fclose(edgefile);
-	  }**/
 	}
 
 	if(hh > thresh - TOL) { 
@@ -306,23 +250,13 @@ int main(int argc, char ** argv)
 	  float weight = (hh * 4.5);
 	  if ((weight > 1.0 + TOL) || (weight < 0.0 - TOL)) {
 	    cout << "\nWarning: CCC value is " << weight << endl;
-	    //fatal("Invalid CCC value");
 	    
-	    //if(LOG_FILE)
-	      //fprintf(logfile, "\nWarning: CCC value is %f\n", weight);
 	  }
 
 	  sprintf(result, "\tedge\n\t[\n\tsource %d\n\ttarget %d\n\tweight %f\n\t]\n", start1+i+numSnps+1, start2+j+numSnps+1, weight);
           results.push_back(result);
-	  //fprintf(output, "\tedge\n\t[\n\tsource %d\n\ttarget %d\n\tweight %f\n\t]\n", start1+i+numSnps+1, start2+j+numSnps+1, weight);
 	  numEdges++;
 
-	  /**if(PRINT_EDGE_IDS) {
-	    if ((edgefile = fopen("edgeList.txt", "a")) == NULL)
-	      fatal("'edgeList.txt' file could not be opened.\n");
-	    fprintf(edgefile, "%d ", (start1+i+numSnps+1)*numNodes + (start2+j+numSnps+1));
-	    fclose(edgefile);
-	  }**/
 	}
       }   
        
