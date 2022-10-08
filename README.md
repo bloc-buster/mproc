@@ -1,5 +1,5 @@
-## BLOCBUSTER
-- (multiprocessing version of CCC)
+## MPROC
+- (multiprocessing version of CCC module of the BlocBuster program)
 ## CCC written by Sharlee Climer
 - (climer@mail.umsl.edu)
 ## multiprocessing version written by James Smith
@@ -33,14 +33,24 @@
 - virt_mproc.sh
 - virt_ccc.sh
 
+## pipelines
+- job scheduling and multiprocessing on HPC system:
+- - blocbuster.cpp => main.sh => mproc.sh => mproc.cpp => helper.cpp
+- job scheduling without multiprocessing on HPC system:
+- - blocbuster.cpp => main.sh => ccc.sh => bloc.cpp
+- multiprocessing without job scheduling on non-HPC computer:
+- - blocbuster.cpp => virt_main.sh => virt_mproc.sh => mproc.cpp => helper.cpp
+- - job scheduling without multiprocessing on non-HPC computer:
+- - blocbuster.cpp => virt_main.sh => virt_ccc.sh => bloc.cpp
+
 ## project structure:
 - Mproc is the multiprocessed version of the CCC module from the BlocBuster program. The original BlocBuster program is stored in a zip file in the "project" folder. To run the entire BlocBuster pipeline, download the zip file and use Mproc in place of the CCC module (the first module of the pipeline).
-- The project is stored in the resources folder. We require that all output be stored outside of the resources folder. 
+- The program is stored in the resources folder. We require that all output be stored outside of the resources folder. 
 - The output file is automatcially placed in the same folder as the input file, and the output folder containing log files will be placed in that folder as well. Any attempt to read from or write to the folder containing the executables will result in an error.
 - project folder (name of your choice)
 - - resources (folder)
 - - - all required executable files are stored here
-- - INSTRUCTIONS (text file)
+- - README.md (text file)
 
 ## configure:
 - overwrite mproc.sh and ccc.sh with appropriate sbatch parameters, then comment out the warning and the exit statement
