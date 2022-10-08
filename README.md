@@ -44,13 +44,17 @@
 - - blocbuster.cpp => virt_main.sh => virt_ccc.sh => bloc.cpp
 
 ## project structure:
-- Mproc is the multiprocessed version of the CCC module from the BlocBuster program. The original BlocBuster program is stored in a zip file in the "project" folder. To run the entire BlocBuster pipeline, download the zip file and use Mproc in place of the CCC module (the first module of the pipeline).
-- The program is stored in the resources folder. We require that all output be stored outside of the resources folder. 
+- Mproc is the multiprocessed version of the CCC module from the BlocBuster program. The original BlocBuster program is stored in a zip file in the "blocbuster" folder. To run the entire BlocBuster pipeline, download the zip file and use Mproc in place of the CCC module (the first module of the pipeline).
+- The Mproc program is stored in the mproc folder. We require that all output be stored outside of the mproc folder. 
 - The output file is automatcially placed in the same folder as the input file, and the output folder containing log files will be placed in that folder as well. Any attempt to read from or write to the folder containing the executables will result in an error.
 - project folder (name of your choice)
-- - resources (folder)
-- - - all required executable files are stored here
+- - blocbuster (folder)
+- - - zip file of blocbuster program
+- - mproc (folder)
+- - - executable files
 - - README.md (text file)
+- - data (folder)
+- - - example file with 100 snps, 315 individuals, 0 header rows, 0 header columns
 
 ## configure:
 - overwrite mproc.sh and ccc.sh with appropriate sbatch parameters, then comment out the warning and the exit statement
@@ -58,7 +62,7 @@
 - bloc.h has been set for SNPs as rows
 - if you need SNPs as columns, change setting in bloc.h
 
-## compile (from within resources folder):
+## compile (from within mproc folder):
 - srun make clean
 - srun make
 - (on each run, main.sh recompiles several files since it must rewrite params.h)
