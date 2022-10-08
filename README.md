@@ -40,7 +40,7 @@
 - - blocbuster.cpp => main.sh => ccc.sh => bloc.cpp
 - multiprocessing without job scheduling on non-HPC computer:
 - - blocbuster.cpp => virt_main.sh => virt_mproc.sh => mproc.cpp => helper.cpp
-- - job scheduling without multiprocessing on non-HPC computer:
+- job scheduling without multiprocessing on non-HPC computer:
 - - blocbuster.cpp => virt_main.sh => virt_ccc.sh => bloc.cpp
 
 ## project structure:
