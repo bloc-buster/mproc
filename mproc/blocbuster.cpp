@@ -45,6 +45,12 @@ int formula3(int n, int m){
 	return (int) ( ( (n * m) * (n * m + 1) ) / 2 );
 }
 
+// average processes per job
+// p = n(mn+1) / (m+1)
+int formula4(int n, int m){
+	return (int) ( (n * (m * n + 1)) / (m + 1) );
+}
+
 int main(int argc,char ** argv){
 	// get working directory from which program was invoked
 	char dir[MAXPATHLEN+1];
@@ -301,7 +307,7 @@ int main(int argc,char ** argv){
 			printf("jobs %d\n",formula1(g1));
 		} else {
 			// combined batch and multiprocessing, quantify total processes from all jobs
-			printf("processes %d\n", formula3(g1,g2));
+			printf("jobs %d total processes %d average processes per job %d\n", formula1(g1), formula3(g1,g2), formula4(g1,g2));
 		}
 		exit(0);
 	}

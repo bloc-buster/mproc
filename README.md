@@ -72,15 +72,10 @@
 - - on the first run, the program generates partial files in the output folder
 - - on the second run, the program gathers the partial files into a complete file
 - first, run blocbuster with srun blocbuster or just ./blocbuster
-- - blocbuster has required parameters
-- - blocbuster then invokes main.sh
-- - main.sh then invokes sbatch on mproc.sh
-- - mproc.sh then invokes mproc.cpp with srun
-- - the .sh files generate no new .sh batch files...instead, a single .sh file is reused with varying parameters
 - wait for all jobs to complete
 - then, run blocbuster with -z and no parameters
 - read the SLURM output file from the most recent job to verify the checksum
-- - if comparisons equals expected comparisons then the results are correct
+- - if observed comparisons equals expected comparisons then the results are correct
 
 ## different runs at same time:
 - not possible - you must wait until each batch completes before starting another run
