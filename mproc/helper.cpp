@@ -55,7 +55,7 @@ int main(int argc, char ** argv)
   unsigned long long int comparisons = 0;
 
   getShm();
-  if(semInit(SEMNAME,MAXSEMS) == -1){
+  if(semaphores==1 && semInit(SEMNAME,MAXSEMS) == -1){
 	fprintf(stderr,"error - could not initialize semaphore\n");
 	exit(1);
   }
@@ -300,7 +300,9 @@ int main(int argc, char ** argv)
 		FILE * write;
 		if((write = fopen(checkfileName, "w"))==NULL){
 			fprintf(stderr,"error - could not write to checksum file\n");
-			semSignal();
+			if(semaphores==1){
+				semSignal();
+			}
 			exit(1);
 		}
 		fprintf(write,"%llu",comps);
