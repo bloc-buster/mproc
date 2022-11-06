@@ -386,7 +386,7 @@ int main(int argc, char ** argv)
 	/*********************/
 	getShm();
 	initShm();
-	if(semInit(SEMNAME,MAXSEMS) == -1){
+	if(semaphores==1 && semInit(SEMNAME,MAXSEMS) == -1){
 		fprintf(stderr,"error - could not initialize semaphore\n");
 		releaseShm();
 		exit(1);
@@ -423,13 +423,17 @@ int main(int argc, char ** argv)
 	if(granularity < 1){
 		fprintf(stderr,"error - zero granularity\n");
 		releaseShm();
-		semRelease(SEMNAME);
+		if(semaphores==1){
+			semRelease(SEMNAME);
+		}
 		exit(1);
 	}
 	if(granularity > numSnps){
 		fprintf(stderr,"error - granularity %d may not exceed snps %d\n",granularity,numSnps);
 		releaseShm();
-		semRelease(SEMNAME);
+		if(semaphores==1){
+			semRelease(SEMNAME);
+		}
 		exit(1);
 	}
 	int maxprocesses = 15; // some servers have limits on simultaneous processes
@@ -438,7 +442,9 @@ int main(int argc, char ** argv)
 	   if(maxprocesses < 1){
 		   fprintf(stderr,"error - too few maxprocesses\n");
 		   releaseShm();
-		   semRelease(SEMNAME);
+		   if(semaphores==1){
+			semRelease(SEMNAME);
+		   }
 		   exit(1);
 	   }
 	}
@@ -569,12 +575,14 @@ int main(int argc, char ** argv)
 		if(temp == 0){ // not completed
 			fprintf(stderr,"error waiting for child process\n");
 			releaseShm();
-			semRelease(SEMNAME);
+			if(semaphores==1){
+				semRelease(SEMNAME);
+			}
 			exit(1);
 		}
 	}
 	releaseShm();
-	if(semRelease(SEMNAME) == -1){
+	if(semaphores==1 && semRelease(SEMNAME) == -1){
 		fprintf(stderr,"error - could not release semaphore\n");
 		exit(1);
 	}

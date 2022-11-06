@@ -1,0 +1,20 @@
+data preparation
+        example - snps as rows, 1 header row, 11 header columns, then individuals
+	if have csv file, convert snps file to delimiters as blanks
+		tr ',' ' ' < file.csv > file.txt
+	copy header columns into separate info file
+		srun cut -d ' ' -f 1-11 < data/trimmed47798.txt > data/47798.info
+	remove all header rows/columns
+                remove header row by writing all lines except top line
+                (file has 47798 snps + 1 header row = 47799)
+		srun tail -n 47798 data/trimmed47798.txt > data/47798raw1.txt
+                remove header columns with --complement option
+		srun cut -d ' ' -f 1-11 --complement < data/47798raw1.txt > data/47798raw2.txt
+	if has snps as rows, transpose so that snps are columns
+		sbatch transpose.sh
+	file should now have columns > rows
+		wc -l data/47798transpose.txt
+pipeline
+	sbatch ccc.sh
+	sbatch bfs.sh
+	sbatch carriers.sh
