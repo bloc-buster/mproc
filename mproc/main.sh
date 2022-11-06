@@ -147,8 +147,6 @@ x_stop=()
 y_start=()
 y_stop=()
 # compute indices of SNP partitions starting from 1 for easy validation (C++ files must subtract one from them)
-# in a SNPs x SNPs matrix, x and y are the same
-# for each SNP x, for each SNP y, add SNP pair to arrays unless x and y are the same SNP or have already added them with x and y reversed
 for (( x = 1; x <= $granularity1; x += 1 ))
 do
 	for (( y = 1; y <= $granularity1; y += 1 ))

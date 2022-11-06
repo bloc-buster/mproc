@@ -54,7 +54,7 @@
 - - - executable files
 - - README.md (text file)
 - - data (folder)
-- - - example file with 100 snps, 315 individuals, 0 header rows, 0 header columns
+- - - example file with 300 snps, 315 individuals, 0 header rows, 0 header columns
 
 ## configure:
 - overwrite mproc.sh and ccc.sh with appropriate sbatch parameters, then comment out the warning and the exit statement
@@ -118,8 +118,8 @@
 - SLURM output files (ends with .out)
 
 ## example run:
-- the example file from the data folder has 100 snps and 315 individuals
-- ./blocbuster /home/username/data/example_100_315.txt /home/username/data/out.gml 0.7 315 100 0 0 1 3 5 /home/username/data/temp_output_files
+- the example file from the data folder has 300 snps and 315 individuals
+- ./blocbuster /home/username/data/example_315_300.txt /home/username/data/out.gml 0.7 315 300 0 0 1 3 5 /home/username/data/temp_output_files
 - (wait until all jobs have completed, then generate gml file)
 - ./blocbuster -z
 
