@@ -1,0 +1,19 @@
+cd bfs/source/
+make
+mv bfs ../
+cd ../../carriers/source/
+make
+mv carriers ../
+cd ../../ccc/source/
+make
+mv ccc ../
+cd ../../keepHi/source/
+make
+mv keepHi ../
+cd ../../perm/source/
+make
+mv perm ../
+cd ../../split/source/
+make
+mv split ../
+cd ../../

@@ -2,12 +2,12 @@
 
 #SBATCH -p hpc3 
 #SBATCH -N 1
-#SBATCH -c 15
+#SBATCH -c 20
 #SBATCH --mem 64G
 #SBATCH --time=0-01:00:00
 
-echo "ERROR! Overwrite mproc.sh with sbatch parameters for your local system, then comment out these lines."
-exit 1
+#echo "ERROR! Overwrite mproc.sh with sbatch parameters for your local system, then comment out these lines."
+#exit 1
 
 let numargs=$#
 # if second run

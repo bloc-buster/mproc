@@ -20,7 +20,7 @@
 
 const int ROWS_R_SNPS = 0; // set to 1 if each row (0 if each column) represents a SNP
 
-const int QUIET = 0;  // set to one to eliminate output to screen (Boolean)
+const int QUIET = 1;  // set to one to eliminate output to screen (Boolean)
 const int VERBOSE = 0;  // set to one to display maximum output to screen (Boolean)
 
 const int PRINTGML = 1; // print sparse network to .gml file (Boolean)
@@ -42,7 +42,7 @@ const int SCREEN_INPUT = 0; // set to 1 to be prompted for # of header rows/cols
 const int LOG_FILE = 1; // set to 1 to record screen output to log file (Boolean)
 
 // the following can be adjusted if needed
-const int MAX_NUM_EDGES = 1000000000; // maximum number of edges output
+const int MAX_NUM_EDGES = 10000000; // maximum number of edges output
 const int MAXNUMHEADERS = 200; // maximum number of header rows or columns
 const int MAX_NUM_INDIVIDUALS = 1000000; // maximum number of individuals
 const int MAX_NUM_SNPS = 10000000; // maximum number of SNPs

@@ -1,0 +1,2 @@
+srun: error: lewis4-r630-hpc4rc-node359: task 0: Exited with exit code 13
+slurmstepd: error: execve(): source: Permission denied

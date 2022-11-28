@@ -1,0 +1,14 @@
+Number	Allele	SNP	rs.ID	chromosome	position	gene
+
+Bloc 2 with 3 nodes
+	4 Cases 57.14%
+	0 Controls 0.00%
+3	A	SNP_A-2276339	rs2379981	Y	15410792	C	
+4	A	SNP_A-2113726	rs5746647	22	15437138	D	
+5	A	SNP_A-2214998	rs9605923	Y	15445079	E	
+
+Bloc 3 with 2 nodes
+	4 Cases 44.44%
+	4 Controls 50.00%
+1	A	SNP_A-2314782	rs140378	19	15257135	A	
+2	C	SNP_A-2151351	---	X	15272143	B	

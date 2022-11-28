@@ -1,0 +1,38 @@
+README for perm.
+
+Release v1.0
+June 2014
+Sharlee Climer
+
+
+'perm' is a program for permuting genotype data for validation trials.  
+
+-----------------------------------------------------------------------------
+
+The usage can be found by typing 'perm' on the command line.  
+It follows:
+
+Fatal: Usage:
+
+   perm input.txt output.txt numDataCols numDataRows numHeadCols numHeadRows
+
+where 
+
+- 'input.txt' is your genotype data
+
+- 'output.txt' will hold the permuted data
+
+- 'numDataCols' is the number of individuals
+ 
+- 'numDataRows' is the number of SNPs
+
+- 'numHeadCols' is the number of header columns
+
+- 'numHeadRows' is the number of header rows
+
+-----------------------------------------------------------------------------
+
+** Important:
+This program assumes each row represents a marker and each genotype is a 
+single string with no white space. **
+

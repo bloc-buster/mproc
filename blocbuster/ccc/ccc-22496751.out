@@ -1,0 +1,29 @@
+Timer started.
+
+Command line arguments: 
+	/home/jjs3k2/BlocBuster/ccc/./ccc example_10indiv_6snp.txt temp.gml 0.7 10 6 1 1 
+
+Screen output will be recorded in 'temp.bloc.log'.
+
+
+***Important: Assumed rows represent individuals and 
+   columns represent SNPs in input file.***
+
+
+Each SNP will be represented by two nodes in output graph.
+Frequencies used in computations with a weight of 1.5.
+
+10 individuals and 6 SNPs in entire input file.
+Threshold of 0.7 used.
+
+Reading in data...
+0 snps have only one allele in dataset.
+0 and 0 missing values in first and second SNP sets, respectively.
+
+Computing CCC values...
+1 Custom correlations with values >= 0.7
+
+Timer stopped.
+0.00 seconds.
+
+srun: error: lewis4-r630-hpc4-node224: task 0: Exited with exit code 1

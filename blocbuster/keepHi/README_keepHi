@@ -1,0 +1,35 @@
+README for keepHi.
+
+Release v1.0
+June 2014
+Sharlee Climer
+
+
+This program is used to extract the highest weight edges in a .gml
+file and create a new .gml file with these edges (nodes are the 
+same as the original file). 
+
+---------------------------------------------------------------------
+
+The usage can be found by typing 'keepHi' on the command line.  
+It follows:
+
+Usage:
+  keepHi input.gml numNodes numEdgesOrig numEdgesKeep output.gml
+
+where 
+
+- 'input.gml' is the input file with weighted edges
+
+- 'numNodes' is the number of nodes in 'input.gml'
+
+- 'numEdgesOrig' is the number of edges in 'input.gml'
+
+- 'numEdgesKeep' is the desired number of edges
+
+- 'output.gml' is the output file in .gml format
+
+
+---------------------------------------------------------------------
+
+Contact sharleeclimer@gmail.com with questions, bug reports, etc.  

@@ -1,0 +1,14 @@
+indiv	snp1	snp2
+1	TT	GG
+2	TT	GG
+3	TT	GG
+4	TT	GG
+5	TT	GG
+6	CC	AG
+7	CT	AA
+8	CC	AG
+9	TT	AA
+10	CC	GG
+
+
+

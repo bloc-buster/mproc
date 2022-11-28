@@ -1,0 +1,45 @@
+README for 'carriers'.
+
+Sharlee Climer, November 2009.
+
+The 'carriers' program is useful for identifying candidate multi-SNP interaction clusters, 
+but can only be used when the correlated alleles are specified. It can be used on CCC 
+output that used the allele network option, followed by BFS, and optionally also followed 
+by a clustering routine.  
+
+carriers considers each cluster of alleles one at a time and checks the original genotype data
+to count the number of individuals that possess all of the relevant alleles.  It then 
+compares these tallies for Cases and Controls and outputs clusters that are carried by at 
+least one individual. 
+
+The usage can be found by typing './carriers'  It follows:
+
+Fatal: Usage:
+  carriers clusters.bfs cases.genotypes controls.genotypes numHeadRowsGen numHeadColsGen 
+snp_info.txt numColsSNPinfo numHeadRowsSNPinfo numCases numControls numSNPs outputFile.txt
+
+The first input file 'clusters.bfs' contains the cluster memberships of each of the 
+alleles.  The second input file 'cases.genotypes' contains the original Cases genotype data.
+The third input file is the same for Controls.  The fourth and fifth arguments are the 
+numbers of header rows and columns in the genotyped input files, respectively. The sixth
+argument is the file that contains the SNP info to be printed out for each bloc. The SNPs 
+must be ordered consistently for the two genotype files and the SNP info file! The 
+seventh argument is the number of columns in the SNP info file and the eighth argument
+is the number of header rows in the SNP info file. The ninth and tenth arguments are the 
+numbers of Cases and Controls, respectively.  The eleventh argument is the number of SNPs.  
+The last argument is the name of the output file.
+
+The output file lists each of the clusters that are possessed by at least one individual, 
+along with annotations. For each cluster, the cluster number, the number of nodes, and 
+the number of Cases and number of Controls are stated.
+
+The executable can be tested by typing:
+
+./carriers small.bfs small.case.snp small.ctrl.snp 0 6 small.info.txt 5 1 10 8 5 temp.out
+
+After running, 'temp.out' should match 'check.out'.
+
+
+
+Please contact sharleeclimer@gmail.com with questions, suggestions, bug reports, etc.
+

@@ -4,8 +4,8 @@
 #SBATCH --mem 64G
 #SBATCH --time=0-01:00:00
 
-echo "ERROR! Overwrite ccc.sh with sbatch parameters for your local system, then comment out these lines."
-exit 1
+#echo "ERROR! Overwrite ccc.sh with sbatch parameters for your local system, then comment out these lines."
+#exit 1
 
 # if second run
 if [[ "$#" -eq 2 ]]

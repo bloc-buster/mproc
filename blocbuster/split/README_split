@@ -1,0 +1,32 @@
+README for split.
+
+Release v1.0
+June 2014
+Peter Holly
+
+
+'split' is a program for randomly splitting rows of a file into two
+files. This program can be used to prepare data for bootstrapping 
+trials. 
+
+---------------------------------------------------------------------
+
+The usage can be found by typing 'split' on the command line.  
+It follows:
+
+Usage: split input.txt output1.txt output2.txt numberOfHeaderRows (numberOfLinesInOutput1)
+
+
+where 
+
+- 'input.txt' is your input data file
+
+- 'output1.txt' and 'output2.txt' are the first and second output
+  files, respectively
+
+- 'numberOfHeaderRows' is number of header rows in input file (these
+  will be printed to both output files)
+
+- Optional: 'numberOfLinesInOutput1' can be specified in order to split
+  the files into uneven sized files
+

@@ -1,18 +1,47 @@
-## MPROC
-- (multiprocessing version of CCC module of the BlocBuster program)
-## CCC written by Sharlee Climer
+## BLOCBUSTER
+## written by Sharlee Climer
 - (climer@mail.umsl.edu)
-## multiprocessing version written by James Smith
-- (jjs3k2@umsystem.edu)
+- BlocBuster computes blocks of disease-correlated SNPs from input case and control SNP files.
+- For instructions, refer to the README file in the BlocBuster folder.
 
 ## requirements:
 - g++ compiler
 - make
 - Linux
-- SLURM or virtual cloud instance with many processors
+
+## blocbuster-pipeline
+- The blocbuster pipeline has been scripted for you.
+- The scripts require a SLURM HPC system.
+- Just change the global variables at the top of batch.sh to match your configuration.
+- And change the sbatch headers at the tops of the .sh files.
+- Then run ./batch.sh or srun batch.sh.
+
+## The remainder of this file refers to the Mproc program.
+
+## MPROC
+## written by James Smith
+- (jjs3k2@umsystem.edu)
+- Mproc is the batched multiprocessing version of the BlocBuster program.
+
+## requirements:
+- g++ compiler
+- make
+- Python
+- Linux
+- SLURM (or virtual cloud instance with many processors)
 - overwrite mproc.sh and ccc.sh with sbatch parameters relevant to your system
 
-## required files:
+## mproc-pipeline
+- The mproc pipeline has been scripted for you.
+- The scripts require either a SLURM HPC system or a Linux computing instance.
+- To run without an HPC system, set granularity1 = 0 in batch.sh.
+- Just change the global variables at the top of batch.sh to match your configuration.
+- For SLURM, also change the sbatch variables in mproc/mproc.sh and mproc/ccc.sh.
+- Then run ./batch.sh or srun batch.sh.
+
+## The remainder of this file is an explanation of the Mproc program.
+
+## Mproc required files:
 - blocbuster.cpp (invokes main.sh or ccc.sh)
 - main.sh (invokes mproc.sh)
 - mproc.sh (invokes mproc.cpp)
@@ -33,7 +62,8 @@
 - virt_mproc.sh
 - virt_ccc.sh
 
-## pipelines
+## mproc pipelines
+- the following is an explanation of the flow logic for the files in the mproc folder
 - job scheduling and multiprocessing on HPC system:
 - - blocbuster.cpp => main.sh => mproc.sh => mproc.cpp => helper.cpp
 - job scheduling without multiprocessing on HPC system:
@@ -44,23 +74,26 @@
 - - blocbuster.cpp => virt_main.sh => virt_ccc.sh => bloc.cpp
 
 ## project structure:
-- Mproc is the multiprocessed version of the CCC module from the BlocBuster program. The original BlocBuster program is stored in a zip file in the "blocbuster" folder. To run the entire BlocBuster pipeline, download the zip file and use Mproc in place of the CCC module (the first module of the pipeline).
+- Mproc is the multiprocessed version of the CCC module from the BlocBuster program. The original BlocBuster program is stored in the "BlocBuster" folder. To run the entire BlocBuster pipeline, use Mproc in place of the CCC module (the first module of the pipeline).
 - The Mproc program is stored in the mproc folder. We require that all output be stored outside of the mproc folder. 
-- The output file is automatcially placed in the same folder as the input file, and the output folder containing log files will be placed in that folder as well. Any attempt to read from or write to the folder containing the executables will result in an error.
+- The output file is automatically placed in the same folder as the input file, and the output folder containing log files will be placed in that folder as well. Any attempt to read from or write to the folder containing the executables will result in an error.
 - project folder (name of your choice)
-- - blocbuster (folder)
-- - - zip file of blocbuster program
+- - BlocBuster (folder)
+- - blocbuster-pipeline (folder)
+- - - SLURM scripts for a full run of the BlocBuster pipeline
 - - mproc (folder)
-- - - executable files
+- - - scripts and executable files
+- - mproc-pipeline (folder)
+- - - scripts for a full run of the mproc pipeline on either a SLURM HPC system or a Linux cloud instance
 - - README.md (text file)
 - - data (folder)
-- - - example file with 300 snps, 315 individuals, 0 header rows, 0 header columns
+- - - example file with 1000 snps, 102 individuals, 1 header rows, 11 header columns
 
 ## configure:
 - overwrite mproc.sh and ccc.sh with appropriate sbatch parameters, then comment out the warning and the exit statement
 - - the program will not run until you comment out the warning and the exit statement
-- bloc.h has been set for SNPs as rows
-- if you need SNPs as columns, change setting in bloc.h
+- bloc.h has been set for SNPs as columns 
+- if you need SNPs as rows, change setting in bloc.h
 
 ## compile (from within mproc folder):
 - srun make clean
@@ -68,7 +101,7 @@
 - (on each run, main.sh recompiles several files since it must rewrite params.h)
 
 ## run:
-- the program requires two runs
+- the mproc program requires two runs
 - - on the first run, the program generates partial files in the output folder
 - - on the second run, the program gathers the partial files into a complete file
 - first, run blocbuster with srun blocbuster or just ./blocbuster
@@ -118,10 +151,10 @@
 - SLURM output files (ends with .out)
 
 ## example run:
-- the example file from the data folder has 300 snps and 315 individuals
-- ./blocbuster /home/username/data/example_315_300.txt /home/username/data/out.gml 0.7 315 300 0 0 1 3 5 /home/username/data/temp_output_files
+- the example file from the data folder has 1000 snps and 102 individuals
+- ./mproc/blocbuster ./data/example_102_1000.txt ./data/out.gml 0.7 315 300 1 11 1 3 5 ./data/temp_output_files
 - (wait until all jobs have completed, then generate gml file)
-- ./blocbuster -z
+- ./mproc/blocbuster -z
 
 ## checking results:
 - after invoking -z, read the resulting SLURM output file (with the highest number)

@@ -1,0 +1,50 @@
+README for BlocBuster Package.
+
+Release v.1.0
+June 2014
+
+
+---------------------------------------------------------------------
+
+Unzip the package:
+   gunzip BlocBuster_v.1.0.tar.gz
+
+Unpack the tar file:
+   tar -xvf BlocBuster_v.1.0.tar
+
+Move into the directory:
+   cd BlocBuster
+
+Install the executables:
+   ./install
+
+---------------------------------------------------------------------
+
+
+This package includes the following programs:
+
+ccc: This program is used first to identify significant
+   correlations and build a network represented by a .gml
+   file.
+
+keepHi: This program creates a new .gml file
+   that contains the specified number of highest
+   weight edges.
+
+bfs: Breadth-first search program to extract connected
+   components (blocs) in network.
+
+carriers: Program to test bloc possession by individuals 
+   and compare groups of individuals.
+
+perm: Program to permute genotype data. Permuted
+   data should not hold true correlations and can be
+   used to validate the CCC threshold selected.
+
+split: Program to split data into two datasets. 
+   Can be used for bootstrapping trials.
+
+
+Please contact Sharlee at sharleeclimer@gmail.com with
+questions, comments, bug reports, etc. We would also
+appreciate hearing about your results! Best of luck!

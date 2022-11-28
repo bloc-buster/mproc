@@ -1,0 +1,167 @@
+README for ccc.
+
+Release v1.0
+June 2014
+Sharlee Climer
+
+
+'ccc' is a program for computing vector-based correlations between 
+SNP alleles and outputting high correlations to a .gml file..  
+
+---------------------------------------------------------------------
+
+The usage can be found by typing 'ccc' on the command line.  
+It follows:
+
+Fatal: Usage:
+
+   ccc input.txt output.gml threshold numInd numSNPs numHeaderRows numHeadCols
+
+where 
+
+- 'input.txt' is your genotype data
+
+- 'output.gml' is the output file in .gml format
+
+- 'threshold' is the CCC threshold for creating an edge
+
+- 'numInd' is the number of individuals
+
+- 'numSNPs' is the number of SNPs
+
+- 'numHeadRows' is the number of header rows in 'input.txt'
+
+- 'numHeadCols' is the number of header columns in 'input.txt'
+
+---------------------------------------------------------------------
+
+The 'input.txt' file is your genotype data.  
+
+- ccc accepts any number of header rows and/or header columns.
+
+- The genotypes can be in any of the following formats:
+	AT
+	A/T
+	A T
+  where there is a single space between alleles in the third option.
+
+- Other than the single space of the third option above, all white
+  space (space, multiple spaces, tab, newline) are treated the same.
+
+- Accepted characters include: A, C, G, T, D, I, N, NA, NN, 0 (zero), 
+  where N, NA, NN, and zero represent missing data. (D and I can be 
+  used to represent deletions and insertions.)
+
+- User can specify a custom missing symbol in 'bloc.h'.
+
+- If each row represents a SNP (e.g. HapMap format), set ROWS_R_SNPS 
+  in 'bloc.h' to 1.  If each column represents a SNP (e.g. Plink 
+  format) set this value to 0. 
+
+*** Important note about input file: ***
+
+- Each string in the header rows and/or columns must be continuous
+  with no internal white space.
+
+---------------------------------------------------------------------
+
+The 'output.gml' file is the output file in .gml format.
+
+Some notes about this format:
+
+- Can have comments at beginning of file (number of nodes, etc.).
+  Blocbuster will output one comment line: 'Graph with x nodes.'
+
+- The word 'graph' followed by '[' starts actual listing of the 
+  graph nodes and edges.
+
+- Nodes are listed first, followed by edges.  Brackets are placed
+  in particular locations, as in the following example (variations 
+  of white space doesn't matter).
+
+- The 'node', 'id', 'edge', 'source', and 'target' are listed.
+
+- The 'weight' field is optional.  BlocBuster will provide the 
+  relevant CCC value for the weight.  (If SNP graph is created, the
+  maximum CCC value will be the weight.)
+
+Example:
+
+Graph with 4 nodes. 
+graph
+[
+        node 
+        [
+        id 1 
+        ]
+        node 
+        [
+        id 2 
+        ]
+        node 
+        [
+        id 3 
+        ]
+        node 
+        [
+        id 4 
+        ]
+        edge
+        [
+        source 1
+        target 2
+        weight 0.065000
+        ]
+        edge
+        [
+        source 1
+        target 4
+        weight 0.036111
+        ]
+        edge
+        [
+        source 3
+        target 2
+        weight 0.140000
+        ]
+        edge
+        [
+        source 3
+        target 4
+        weight 0.077778
+        ]
+]
+
+---------------------------------------------------------------------
+
+If LOG_FILE is set to 1 in bloc.h, a log file with the same name 
+as the output file (minus the '.gml' plus '.bloc.log' appended) will
+record the screen output, except warnings and fatal messages.
+
+---------------------------------------------------------------------
+
+If you would like to run ccc in the background, use:
+
+  nohup ccc input.txt output.gml threshold numInd numSNPs numHeadRows
+      numHeadCols  >& trialName.screen &
+
+---------------------------------------------------------------------
+
+ccc will terminate if too many edges are output.  This value 
+can be adjusted by changing MAX_NUM_EDGES in 'bloc.h'.  Default value
+is one million edges.
+
+---------------------------------------------------------------------
+
+An example file is included and can be used as a test by typing:
+
+./ccc example_10indiv_6snp.txt temp.gml 0.7 10 6 1 1
+
+The file 'temp.gml' should match 'check.gml' and hold a single edge
+from source 11 to target 12 with weight of 0.748.
+
+---------------------------------------------------------------------
+
+Contact sharleeclimer@gmail.com with questions, bug reports, etc.  
+
+
