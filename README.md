@@ -1,8 +1,8 @@
 ## BLOCBUSTER
 ## written by Sharlee Climer
 - (climer@mail.umsl.edu)
-- BlocBuster computes blocks of disease-correlated SNPs from input case and control SNP files.
-- For instructions, refer to the README file in the BlocBuster folder.
+- BlocBuster computes blocks of SNP correlations from input case/control SNP files.
+- Refer to instructions in the BlocBuster folder.
 
 ## requirements:
 - g++ compiler
@@ -21,7 +21,7 @@
 ## MPROC
 ## written by James Smith
 - (jjs3k2@umsystem.edu)
-- Mproc is the batched multiprocessing version of the BlocBuster program.
+- Mproc is the batched multiprocessed version of the CCC module from the BlocBuster program. The original BlocBuster program is stored in the "BlocBuster" folder. To run the entire BlocBuster pipeline with Mproc, use Mproc in place of the CCC module (the first module of the pipeline), or use mproc-pipeline.
 
 ## requirements:
 - g++ compiler
@@ -74,7 +74,6 @@
 - - blocbuster.cpp => virt_main.sh => virt_ccc.sh => bloc.cpp
 
 ## project structure:
-- Mproc is the multiprocessed version of the CCC module from the BlocBuster program. The original BlocBuster program is stored in the "BlocBuster" folder. To run the entire BlocBuster pipeline, use Mproc in place of the CCC module (the first module of the pipeline).
 - The Mproc program is stored in the mproc folder. We require that all output be stored outside of the mproc folder. 
 - The output file is automatically placed in the same folder as the input file, and the output folder containing log files will be placed in that folder as well. Any attempt to read from or write to the folder containing the executables will result in an error.
 - project folder (name of your choice)
