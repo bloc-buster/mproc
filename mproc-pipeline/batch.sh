@@ -1,18 +1,20 @@
 #!/bin/bash
 
 # overwrite all global variables with your input values
-# also set sbatch values in ccc.sh, bfs.sh, and carriers.sh
-# also make sure that bloc.h is set to ROWS_R_SNPS=0 in mproc or ccc project folder
-# and BlocBuster is compiled to return 0 as true rather than 1 for Linux responses
+# also set sbatch values in bfs.sh, carriers.sh
+# and, in the mproc folder, set the sbatch values in mproc.sh and ccc.sh
 # then run with ./batch.sh or ./batch.sh > out.txt & to run in background
-# find results in "data" folder
+# find results in "data" folder within mproc-pipeline directory
+# (the following requirements should be implemented already)
+# (bloc.h is set to ROWS_R_SNPS=0 in mproc project folder)
+# (BlocBuster executable files are compiled to return 0 as true rather than 1 for Linux responses)
 
 case_file="../data/TSI-8-102-1000" # path to file outside data folder
 control_file="../data/TSI-8-102-1000" # path to file outside data folder
-blocbuster_path="/home/jjs3k2/mproc/mproc/blocbuster" # path to executable file 
+blocbuster_path="/home/jjs3k2/mproc/mproc/blocbuster" # path to executable file within mproc folder
 blocbuster_folder="log" # folder name without path, builds a temp folder within the data folder
-bfs_path="/home/jjs3k2/BlocBuster/bfs/bfs" # path to executable file
-carriers_path="/home/jjs3k2/BlocBuster/carriers/carriers" # path to executable file
+bfs_path="/home/jjs3k2/BlocBuster/bfs/bfs" # path to executable file within BlocBuster folder
+carriers_path="/home/jjs3k2/BlocBuster/carriers/carriers" # path to executable file within BlocBuster folder
 gml_file="out.gml" # file name without path
 bfs_file="out.bfs" # file name without path
 carriers_file="carriers.out" # file name without path
@@ -23,8 +25,6 @@ let num_controls=102
 let num_snps=1000
 let case_control_header_rows=1
 let case_control_header_columns=11
-let info_header_columns=$case_control_header_columns
-let info_header_rows=$case_control_header_rows
 threshold="0.7"
 let granularity1=0
 let granularity2=3
@@ -34,6 +34,8 @@ let semaphores=0 # 0 = false, 1 = true, default 0 (recommended)
 # no modification required after this line
 
 # data cleaning
+let info_header_columns=$case_control_header_columns
+let info_header_rows=$case_control_header_rows
 if [[ $num_snps -le $num_cases || $num_snps -le $num_controls ]]
 then
 	echo "error - fewer snps than individuals"

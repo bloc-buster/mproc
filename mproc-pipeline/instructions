@@ -1,0 +1,10 @@
+Run with ./batch.sh with no parameters.
+
+First, configure parameters in batch.sh.
+
+The parameters are the variables at the top of the file.
+
+Also, follow instructions at the top of the file.
+
+For example, in addition to configuring parameters in batch.sh, you must configure sbatch parameters in other files (bfs.sh, carriers.sh, mproc/mproc.sh, mproc/ccc.sh).
+
