@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# instructions
+
 # overwrite all global variables with your input values
 # also set sbatch values in bfs.sh, carriers.sh
 # and, in the mproc folder, set the sbatch values in mproc.sh and ccc.sh
@@ -11,32 +13,47 @@
 
 # please specify paths, either relative or absolute
 # these should already work correctly
+
 case_file="../data/example_102_1000.txt" # path to file outside data folder
 control_file="../data/example_102_1000.txt" # path to file outside data folder
 blocbuster_path="../mproc/blocbuster" # path to executable file within mproc folder
 keephi_path="../blocbuster/keepHi/keepHi" # path to executable file within blocbuster folder
 bfs_path="../blocbuster/bfs/bfs" # path to executable file within blocbuster folder
 carriers_path="../blocbuster/carriers/carriers" # path to executable file within blocbuster folder
+
 # please specify file names, not paths
+
 blocbuster_folder="log" # folder name without path, builds a temp folder within the data folder
 gml_file="out.gml" # file name without path
 keephi_file="keephi.gml" # file name without path
 bfs_file="out.bfs" # file name without path
 carriers_file="carriers.out" # file name without path
 snp_info_file="snps.info" # file name without path
-# please specify strings, integers, or floating point values
+
+# please specify string value
+
 delimiter=' ' # delimiter in case/control file
+
+# please specify integers
+
 let num_cases=102
 let num_controls=102
 let num_snps=1000
 let case_control_header_rows=1
 let case_control_header_columns=11
-threshold=0.7
-edges_to_keep=0.5
 let granularity1=3
 let granularity2=3
 let maxProcs=10
 let semaphores=0 # 0 = false, 1 = true, default 0 (recommended)
+
+# please specify decimal values
+
+threshold=0.7 # floating point between 0 and 1
+edges_to_keep=0.5 # ratio between 0 and 1
+
+
+##############################################################################
+
 
 # no modification required after this line
 
@@ -45,7 +62,7 @@ if [[ $# -ge 1 ]]
 then
 	if [[ $1 == "-h" ]]
 	then
-		echo "usage: batch.sh [-h -a -z]"
+		echo "usage: batch.sh [-h help] [-a run just first module] [-z run just last modules]"
 		exit 0
 	elif [[ $1 == "-a" ]]
 	then

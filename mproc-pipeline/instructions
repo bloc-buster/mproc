@@ -4,8 +4,8 @@ Run with ./batch.sh with no parameters except options.
 
 options (optional):
 	-h print help information
-	-a just run mproc and mproc -z
-	-z just run keephi, bfs, and carriers (you should only use -z after using -a)
+	-a just run first module (mproc and mproc -z)
+	-z just run last modules (keephi, bfs, and carriers) (you should only use -z after using -a)
 
 First, configure parameters in batch.sh.
 
