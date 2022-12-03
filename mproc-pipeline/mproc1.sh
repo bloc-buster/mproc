@@ -27,6 +27,7 @@ shift
 semaphores=$1
 
 params="$blocbuster_path $infile $outfile $threshold $numInd $numSnps $headerRows $headerColumns $g1 $g2 $maxProcs $outFolder $semaphores"
+
 pidlist=`srun $params`
 echo $pidlist
 

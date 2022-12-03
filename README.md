@@ -148,8 +148,8 @@
 ## options:
 - The parameters above are positional until the granularity parameters, after which the parameters may be specified either positionally or with the following options.
 - If you specify an option, the parameters following that parameter's typical position may no longer be specified positionally. They may be left unspecified or specified with options.
-- *-g* # (granularity 1) 
-- *-G* # (granularity 2) 
+- *-g value* (granularity 1) 
+- *-G value* (granularity 2) 
 - *-h* (help) 
 - *-o value* (output folder name) 
 - *-p value* (max processes) 
