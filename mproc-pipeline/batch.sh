@@ -21,7 +21,7 @@ keephi_path="../blocbuster/keepHi/keepHi" # path to executable file within blocb
 bfs_path="../blocbuster/bfs/bfs" # path to executable file within blocbuster folder
 carriers_path="../blocbuster/carriers/carriers" # path to executable file within blocbuster folder
 
-# please specify file names, not paths
+# please specify file or folder names, not paths
 
 blocbuster_folder="log" # folder name without path, builds a temp folder within the data folder
 gml_file="out.gml" # file name without path
@@ -29,6 +29,7 @@ keephi_file="keephi.gml" # file name without path
 bfs_file="out.bfs" # file name without path
 carriers_file="carriers.out" # file name without path
 snp_info_file="snps.info" # file name without path
+tmp_dir="data" # output will be stored in the tmp_dir in the mproc-pipeline folder
 
 # please specify string value
 
@@ -50,6 +51,13 @@ let semaphores=0 # 0 = false, 1 = true, default 0 (recommended)
 
 threshold=0.7 # floating point between 0 and 1
 edges_to_keep=0.5 # ratio between 0 and 1
+
+# HPC sbatch settings
+
+slurm_partition="hpc3"
+slurm_mem="32G"
+slurm_output="$tmp_dir/%j.out"
+slurm_time="0-01:00:00"
 
 
 ##############################################################################
@@ -86,7 +94,6 @@ then
 	echo "error - could not find one of the input files"
 	exit 1
 fi
-tmp_dir="data"
 if [[ $skip != "first" ]]
 then
 	rm -rf $tmp_dir
@@ -181,7 +188,7 @@ let num_ind=$num_cases
 
 if [[ $skip != "first" && $granularity1 -gt 0 ]]
 then
-	pidlist=`srun mproc1.sh $blocbuster_path $infile $outfile $threshold $num_ind $num_snps $case_control_header_rows $case_control_header_columns $granularity1 $granularity2 $maxProcs $blocbuster_folder $semaphores`
+	pidlist=`srun mproc1.sh $blocbuster_path $infile $outfile $threshold $num_ind $num_snps $case_control_header_rows $case_control_header_columns $granularity1 $granularity2 $maxProcs $blocbuster_folder $semaphores $slurm_partition $slurm_mem $slurm_time`
 	out=${pidlist#*Submitted batch job}
 	ids=`echo $out | sed "s/Submitted batch job//g"`
 	#pidlist=`echo $ids | sed "s/ /,afterok:/g"`
@@ -287,7 +294,7 @@ then
 		options="--dependency=afterok:$pid"
 	fi
 	params="--parsable $options keephi.sh $keephi_path $infile $nodes $edges $edges_to_keep $outfile"
-	pid=`sbatch $params`
+	pid=`sbatch -p $slurm_partition --mem $slurm_mem --output=$slurm_output --time=$slurm_time $params`
 	echo "running sbatch $pid"
 	pid2=$pid
 else
@@ -305,7 +312,7 @@ outfile="$tmp_dir/$bfs_file"
 if [[ $granularity1 -gt 0 ]]
 then
 	params="--parsable --dependency=afterok:$pid bfs.sh $bfs_path $infile $outfile"
-	pid=`sbatch $params`
+	pid=`sbatch -p $slurm_partition --mem $slurm_mem --output=$slurm_output --time=$slurm_time $params`
 	echo "running sbatch $pid"
 	pid3=$pid
 else
@@ -322,7 +329,7 @@ outfile="$tmp_dir/$carriers_file"
 
 if [[ $granularity1 -gt 0 ]]
 then
-	pid=`sbatch --parsable --dependency=afterok:$pid carriers.sh $carriers_path $infile $case_file $control_file $case_control_header_rows $case_control_header_columns $snp_info_file $info_header_columns $info_header_rows $num_cases $num_controls $num_snps $outfile`
+	pid=`sbatch -p $slurm_partition --mem $slurm_mem --output=$slurm_output --time=$slurm_time --parsable --dependency=afterok:$pid carriers.sh $carriers_path $infile $case_file $control_file $case_control_header_rows $case_control_header_columns $snp_info_file $info_header_columns $info_header_rows $num_cases $num_controls $num_snps $outfile`
 	echo "running sbatch $pid"
 	pid4=$pid
 else

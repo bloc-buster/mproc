@@ -19,10 +19,11 @@
 using namespace std;
 
 // usage description
-void instructions(){
+void instructions(int args){
+		printf("\nfound %d args\n", args);
 		printf("\nusage\n");
 		printf("\nprepare files: ./blocbuster input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) output_folder (default log_files) semaphores (0 or 1 default 0)\n");
-		printf("\noptions: -g # (granularity 1) -G # (granularity 2) -h (help) -n (quantify resulting processes or jobs) -o name (output folder name) -p # (max processes) -s (semaphores, 0 yes 1 no) -z (second run)\n");
+		printf("\noptions: -g # (granularity 1) -G # (granularity 2) -h (help) -n (quantify resulting processes or jobs) -o name (output folder name) -p # (max processes) -s (semaphores, 0 yes 1 no) -z (second run) -P slurm-partition -M slurm-memory -T slurm-max-time\n");
 		printf("\n(wait until jobs complete, then perform second run)\n");
 		printf("\ncombine files: ./blocbuster -z\n\n");
 		exit(1);
@@ -76,8 +77,11 @@ int main(int argc,char ** argv){
 	int procs = 15;
 	char * log_folder = (char *)"log_files";
 	int semaphores = 0;
+	char * slurm_partition = (char *)"";
+	char * slurm_memory = (char *)"32G";
+	char * slurm_time = (char *)"0-01:00:00";
 	int ch;
-	while((ch=getopt(argc,argv,"g:G:hno:p:s:z")) != -1){
+	while((ch=getopt(argc,argv,"g:G:hM:no:p:P:s:T:z")) != -1){
 		// granularity 1, default 1
 		if(ch=='g'){
 			g1 = atoi(optarg);
@@ -90,7 +94,7 @@ int main(int argc,char ** argv){
 			++options;
 		// help
 		} else if(ch=='h'){
-			instructions();
+			instructions(argc);
 		// quantify processes
 		} else if(ch=='n'){
 			computeN = true;
@@ -108,6 +112,18 @@ int main(int argc,char ** argv){
 		// semaphores (default 0 = no, 1 = yes)
 		} else if(ch=='s'){
 			semaphores = atoi(optarg);
+			++options;
+			++options;
+		} else if(ch=='P'){
+			slurm_partition = optarg;
+			++options;
+			++options;
+		} else if(ch=='M'){
+			slurm_memory = optarg;
+			++options;
+			++options;
+		} else if(ch=='T'){
+			slurm_time = optarg;
 			++options;
 			++options;
 		// second run, merge partial gml files
@@ -195,7 +211,7 @@ int main(int argc,char ** argv){
 	}
 	// validate number of args
 	if(argc - options < 8 || argc - options > 13){
-		instructions();
+		instructions(argc);
 	}
 	// add flags to argv index, otherwise argv includes flags with args
 	int argindex = 1 + options;
@@ -342,7 +358,7 @@ int main(int argc,char ** argv){
 	char command[150];
 	if(g1 > 0){
 		// HPC system, batch processing + optional multiprocessing
-		sprintf(command,"srun %smain.sh %s %s %f %d %d %d %d %d %d %d %s %d",root1,inputfile,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);
+		sprintf(command,"srun %smain.sh %s %s %f %d %d %d %d %d %d %d %s %d %s %s %s",root1,inputfile,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores,slurm_partition,slurm_memory,slurm_time);
 	} else {
 		// virtual cloud machine, only multiprocessing
 		sprintf(command,"%svirt_main.sh %s %s %f %d %d %d %d %d %d %d %s %d",root1,inputfile,outputfile,thresh,numind,numsnps,headerrows,headercolumns,g1,g2,procs,outputfolder,semaphores);

@@ -25,8 +25,15 @@ shift
 outFolder=$1
 shift
 semaphores=$1
+shift
+slurm_partition=$1
+shift
+slurm_mem=$1
+shift
+slurm_time=$1
+shift
 
-params="$blocbuster_path $infile $outfile $threshold $numInd $numSnps $headerRows $headerColumns $g1 $g2 $maxProcs $outFolder $semaphores"
+params="$blocbuster_path -P $slurm_partition -M $slurm_mem -T $slurm_time $infile $outfile $threshold $numInd $numSnps $headerRows $headerColumns $g1 $g2 $maxProcs $outFolder $semaphores"
 
 pidlist=`srun $params`
 echo $pidlist

@@ -19,10 +19,10 @@ then
 	command sbatch $params
 	exit 0
 # otherwise validate number of args
-elif [[ "$#" -lt 7 || "$#" -gt 13 ]]
+elif [[ "$#" -lt 7 || "$#" -gt 16 ]]
 then
 	echo "$#"
-	echo "usage: ./main.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) temp_output_folder (default log_files)"
+	echo "usage: ./main.sh input.txt output.gml threshold numInd numSNPs numHeaderRows numHeaderCols granularity1 (default 1) granularity2 (default 7) max_simultaneous_processes (default 15) temp_output_folder (default log_files) slurm_partition slurm_mem slurm_time"
 	echo "alternate (only for conclude): ./main.sh slurm-output-file-name"
 	exit 1
 fi
@@ -73,6 +73,25 @@ then
 	semaphores=$1
 	shift
 fi
+slurm_partition=""
+if [ $numargs -ge 13 ]
+then
+	slurm_partition=$1
+	shift
+fi
+slurm_memory=""
+if [ $numargs -ge 14 ]
+then
+	slurm_memory=$1
+	shift
+fi
+slurm_time=""
+if [ $numargs -ge 15 ]
+then
+	slurm_time=$1
+	shift
+fi
+
 # build params.h file that will save absolute paths and variables for second run
 params="
 #define num_ind $numind\n
@@ -181,10 +200,14 @@ do
 	if [[ $granularity2 -gt 0 ]]
 	then
 		args="--output=$slurmoutfile $runpath/mproc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath"
+		if [[ $slurm_partition != "" && $slurm_memory != "" && $slurm_time != "" ]]
+		then
+			args="-p $slurm_partition --mem $slurm_memory --time=$slurm_time --output=$slurmoutfile -N 1 -c $maxprocesses $runpath/mproc.sh $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $granularity2 $maxprocesses $outputfolder $count $step ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath"
+		fi
 		command sbatch $args
 	# if ony batch processing, invoke ccc.sh
 	else
-		command sbatch --output=$slurmoutfile "$runpath/ccc.sh" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $outputfolder $count ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath
+		command sbatch -p $slurm_partition --mem $slurm_memory --time=$slurm_time --output=$slurmoutfile "$runpath/ccc.sh" $inputfile $outputfile $threshold $numind $numsnps $numheaderrows $numheadercols $outputfolder $count ${x_start[$x]} ${x_stop[$x]} ${y_start[$x]} ${y_stop[$x]} $runpath
 	fi
 	# increment partition counter
 	let count+=1

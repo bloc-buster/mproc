@@ -10,7 +10,8 @@
 - Linux
 
 ## blocbuster-pipeline
-- The blocbuster pipeline has been scripted for you.
+- The Blocbuster pipeline consists of ccc, keephi, bfs, then carriers.
+- The Blocbuster pipeline has been scripted for you.
 - The scripts require a SLURM HPC system.
 - Just change the global variables at the top of batch.sh to match your configuration.
 - And change the sbatch headers at the tops of the .sh files.
@@ -29,17 +30,23 @@
 - Python
 - Linux
 - SLURM (or virtual cloud instance with many processors)
-- overwrite mproc.sh and ccc.sh with sbatch parameters relevant to your system
+- for sbatch parameters, either specify them as options to blocbuster, or overwrite mproc.sh and ccc.sh with sbatch parameters relevant to your system
 
 ## mproc-pipeline
 - Mproc is an alternative version of the first module of BlocBuster.
-- The BlocBuster pipeline consists of mproc, then bfs, then carriers.
+- The Mproc pipeline consists of mproc, keephi, bfs, then carriers.
 - The entire pipeline has been scripted for you.
 - The scripts require either a SLURM HPC system or a Linux computing instance.
 - Just change the global variables at the top of batch.sh to match your configuration.
-- For SLURM, change the sbatch variables in mproc/mproc.sh and mproc/ccc.sh.
+- For SLURM, change the sbatch variables in batch.sh also.
 - To run without an HPC system, set granularity1 = 0 in batch.sh.
-- Then run ./batch.sh or srun batch.sh.
+- Also, in the mproc folder, in bloc.h, set ROWS_R_SNPS = 0 (snps as columns).
+- Then, in the mproc-pipeline folder, run ./batch.sh or srun batch.sh.
+- To run just the first half of the pipeline (the bottleneck), then vary the parameters for the second half of the pipeline, run:
+- - ./batch.sh -a (for the first half of the pipeline)
+- - ./batch.sh -z (for the second half of the pipeline)
+- - reconfigure parameters in batch.sh, then run
+- - ./batch.sh -z
 
 ## The remainder of this file is an explanation of the Mproc program.
 
@@ -92,10 +99,9 @@
 - - - example file with 1000 snps, 102 individuals, 1 header rows, 11 header columns
 
 ## configure:
-- overwrite mproc.sh and ccc.sh with appropriate sbatch parameters, then comment out the warning and the exit statement
-- - the program will not run until you comment out the warning and the exit statement
 - bloc.h has been set for SNPs as columns 
-- if you need SNPs as rows, change setting in bloc.h
+- if you need SNPs as rows, change ROWS_R_SNPS setting in bloc.h
+- for sbatch settings, either overwrite mproc.sh and ccc.sh with appropriate sbatch parameters, or specify options to blocbuster 
 
 ## compile (from within mproc folder):
 - srun make clean
@@ -147,13 +153,18 @@
 
 ## options:
 - The parameters above are positional until the granularity parameters, after which the parameters may be specified either positionally or with the following options.
-- If you specify an option, the parameters following that parameter's typical position may no longer be specified positionally. They may be left unspecified or specified with options.
+- Options should be written before all other parameters except the filename.
+- - e.g. ./mproc/blocubster -P hpc3 -M 32G -T 0-01:00:00 intpufile outputfile 0.8 100 1000 1 11
+- options:
 - *-g value* (granularity 1) 
 - *-G value* (granularity 2) 
 - *-h* (help) 
 - *-o value* (output folder name) 
 - *-p value* (max processes) 
 - *-s value* (semaphores, 0 yes 1 no) 
+- *-P value* (slurm partition)
+- *-M value* (slurm memory)
+- *-T time* (slurm max time)
 - *-z* (second run)
 - *-n* (quantify resulting processes or jobs) 
 
@@ -166,6 +177,8 @@
 
 ## example run:
 - the example file from the data folder has 1000 snps and 102 individuals
+- however, it has SNPs as rows
+- change bloc.h to ROWS_R_SNPS = 1, then run
 - ./mproc/blocbuster ./data/example_102_1000.txt out.gml 0.7 102 1000 1 11 3 3 10 temp_output_files
 - (wait until all jobs have completed, then generate gml file)
 - ./mproc/blocbuster -z
