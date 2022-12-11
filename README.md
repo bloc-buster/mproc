@@ -164,7 +164,7 @@
 - *-s value* (semaphores, 0 yes 1 no) 
 - *-P value* (slurm partition)
 - *-M value* (slurm memory)
-- *-T time* (slurm max time)
+- *-T value* (slurm max time)
 - *-z* (second run)
 - *-n* (quantify resulting processes or jobs) 
 

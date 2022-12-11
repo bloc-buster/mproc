@@ -3,13 +3,12 @@
 # instructions
 
 # overwrite all global variables with your input values
-# also set sbatch values in bfs.sh, carriers.sh
-# and, in the mproc folder, set the sbatch values in mproc.sh and ccc.sh
 # then run with ./batch.sh or ./batch.sh > out.txt & to run in background
 # find results in "data" folder within mproc-pipeline directory
 # (the following requirements should be implemented already)
 # (bloc.h is set to ROWS_R_SNPS=0 in mproc project folder)
 # (BlocBuster executable files are compiled to return 0 as true rather than 1 for Linux responses)
+# (ccc is compiled to have the number of args = 8 or 12)
 
 # please specify paths, either relative or absolute
 # these should already work correctly
