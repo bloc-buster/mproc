@@ -4,8 +4,8 @@
 # also set sbatch values in ccc.sh, bfs.sh, and carriers.sh
 # then run with ./batch.sh
 
-case_file="/home/jjs3k2/pipeline/queue/in/TSI-8-102-1000.txt"
-control_file="/home/jjs3k2/pipeline/queue/in/TSI-8-102-1000.txt"
+case_file="../data/example_102_1000.txt"
+control_file="../data/example_102_1000.txt"
 delimiter=','
 let num_cases=102
 let num_controls=102
@@ -13,12 +13,14 @@ let num_snps=1000
 let case_control_header_rows=1
 let case_control_header_columns=11
 gml_file="out.gml"
+keephi_file="keephi.txt"
 bfs_file="out.bfs"
 carriers_file="carriers.out"
 snp_info_file="snps.info"
 let info_header_columns=$case_control_header_columns
 let info_header_rows=$case_control_header_rows
 threshold="0.8"
+edges_to_keep="0.5"
 
 # no modification required after this line
 
@@ -106,6 +108,16 @@ outfile="$tmp_dir/$gml_file"
 let num_ind=$num_cases
 
 pid=`sbatch --parsable ccc.sh $infile $outfile $threshold $num_ind $num_snps $case_control_header_rows $case_control_header_columns`
+echo "running sbatch $pid"
+
+# keephi
+
+infile=$outfile
+outfile="$tmp_dir/$keephi_file"
+let nodes=$((num_snps * 2))
+let edges=0
+
+pid=`sbatch --parsable --dependency=afterok:$pid keephi.sh $infile $nodes $edges $edges_to_keep $outfile`
 echo "running sbatch $pid"
 
 # bfs
