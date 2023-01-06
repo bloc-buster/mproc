@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo $@
 case_file=$1
 control_file=$2
 case_control_header_rows=$3

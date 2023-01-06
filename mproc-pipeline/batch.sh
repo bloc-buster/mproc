@@ -12,8 +12,8 @@
 # please specify paths, either relative or absolute
 # these should already work correctly
 
-case_file="/home/jjs3k2/data/hapmap-new/chr10-MKK-184-78974.txt"
-control_file="/home/jjs3k2/data/hapmap-new/chr10-MKK-184-78974.txt"
+case_file="../data/example_102_1000.txt"
+control_file="../data/example_102_1000.txt"
 blocbuster_path="../mproc/blocbuster" # path to executable file within mproc folder
 keephi_path="../blocbuster/keepHi/keepHi" # path to executable file within blocbuster folder
 bfs_path="../blocbuster/bfs/bfs" # path to executable file within blocbuster folder
@@ -35,14 +35,14 @@ delimiter=' ' # delimiter in case/control file
 
 # please specify integers
 
-let num_cases=184
-let num_controls=184
-let num_snps=78974
+let num_cases=102
+let num_controls=102
+let num_snps=1000
 let case_control_header_rows=1
 let case_control_header_columns=11
-let granularity1=49
-let granularity2=0
-let maxProcs=1
+let granularity1=3
+let granularity2=3
+let maxProcs=10
 let semaphores=0 # 0 = false, 1 = true, default 0 (recommended)
 
 # please specify decimal values
@@ -179,6 +179,9 @@ then
 	bash virt_mproc1.sh $blocbuster_path $infile $outfile $threshold $num_ind $num_snps $case_control_header_rows $case_control_header_columns $granularity1 $granularity2 $maxProcs $blocbuster_folder $semaphores
 fi
 
+#params="--dependency=afterok:$pidlist mproc2.sh"
+#echo $params
+
 if [[ $skip != "first" && $granularity1 -gt 0 ]]
 then
 	echo "waiting for processes to complete"
@@ -209,15 +212,13 @@ fi
 
 # mproc 
 
-#params="--dependency=afterok:$pidlist mproc2.sh"
-#echo $params
 if [[ $skip != "first" && $granularity1 -gt 0 ]]
 then
 	params="mproc2.sh $blocbuster_path"
 	x=`srun $params`
 	y=`echo $x | sed "s/Submitted batch job//g"`
 	pid=`echo $y | sed "s/ //g"`
-	echo "running sbatch $pid"
+	echo "running $pid"
 	pid1=$pid
 elif [[ $skip != "first" ]]
 then
@@ -226,7 +227,6 @@ then
 	echo "running mproc -z"
 	bash $params
 fi
-
 if [[ $skip == "last" ]]
 then
 	echo "waiting for processes to complete"
