@@ -8,13 +8,12 @@
 # (the following requirements should be implemented already)
 # (bloc.h is set to ROWS_R_SNPS=0 in mproc project folder)
 # (BlocBuster executable files are compiled to return 0 as true rather than 1 for Linux responses)
-# (ccc is compiled to have the number of args = 8 or 12)
 
 # please specify paths, either relative or absolute
 # these should already work correctly
 
-case_file="../data/example_102_1000.txt" # path to file outside data folder
-control_file="../data/example_102_1000.txt" # path to file outside data folder
+case_file="/home/jjs3k2/data/hapmap-new/chr10-MKK-184-78974.txt"
+control_file="/home/jjs3k2/data/hapmap-new/chr10-MKK-184-78974.txt"
 blocbuster_path="../mproc/blocbuster" # path to executable file within mproc folder
 keephi_path="../blocbuster/keepHi/keepHi" # path to executable file within blocbuster folder
 bfs_path="../blocbuster/bfs/bfs" # path to executable file within blocbuster folder
@@ -36,34 +35,33 @@ delimiter=' ' # delimiter in case/control file
 
 # please specify integers
 
-let num_cases=102
-let num_controls=102
-let num_snps=1000
+let num_cases=184
+let num_controls=184
+let num_snps=78974
 let case_control_header_rows=1
 let case_control_header_columns=11
-let granularity1=3
-let granularity2=3
-let maxProcs=10
+let granularity1=49
+let granularity2=0
+let maxProcs=1
 let semaphores=0 # 0 = false, 1 = true, default 0 (recommended)
 
 # please specify decimal values
 
-threshold=0.7 # floating point between 0 and 1
+threshold=0.8 # floating point between 0 and 1
 edges_to_keep=0.5 # ratio between 0 and 1
 
 # HPC sbatch settings
 
-slurm_partition="hpc3"
-slurm_mem="32G"
+slurm_partition="Lewis"
+slurm_mem="64G"
 slurm_output="$tmp_dir/%j.out"
 slurm_time="0-01:00:00"
 
-
 ##############################################################################
-
 
 # no modification required after this line
 
+t1=`echo $(date +'%s')`
 skip="none"
 if [[ $# -ge 1 ]]
 then
@@ -81,105 +79,80 @@ then
 fi
 
 # data cleaning
+
 let info_header_columns=$case_control_header_columns
 let info_header_rows=$case_control_header_rows
+snp_info_file2="$tmp_dir/$snp_info_file"
+snp_info_file=$snp_info_file2
+
 if [[ $num_snps -le $num_cases || $num_snps -le $num_controls ]]
 then
 	echo "error - fewer snps than individuals"
 	exit 1
 fi
+
 if [[ ! -e $case_file || ! -e $control_file || ! -e $blocbuster_path || ! -e $keephi_path || ! -e $bfs_path || ! -e $carriers_path ]]
 then
 	echo "error - could not find one of the input files"
 	exit 1
 fi
+
 if [[ $skip != "first" ]]
 then
 	rm -rf $tmp_dir
 	sleep 1
 	mkdir $tmp_dir
 fi
-tmp_file="tmp.txt"
-tmp_file2="tmp2.txt"
-tmp_file3="tmp3.txt"
-tmp_file4="tmp4.txt"
-outfile1="$tmp_dir/$tmp_file"
-outfile2="$tmp_dir/$tmp_file2"
-outfile3="$tmp_dir/$tmp_file3"
-outfile4="$tmp_dir/$tmp_file4"
-snp_info_file2="$tmp_dir/$snp_info_file"
-snp_info_file=$snp_info_file2
 
-function clean(){
-	if [[ $skip == "first" ]]
+if [[ $skip != "first" && $granularity1 -gt 0 ]]
+then
+	delim=$delimiter
+	if [[ $delim == ' ' ]]
 	then
-		return
+		delim='none'
 	fi
-	infile=$1
-	echo "processing $infile"
-	resultfile=$2
-	# if have csv file, convert snps file to delimiters as blanks
-	if [[ $delimiter != ' ' ]]
-	then
-		tr ',' ' ' < $infile > $outfile1
-	else
-		cp $infile $outfile1
-	fi
-	# copy header columns into separate info file
-	if [[ $case_control_header_columns -ge 0 ]]
-	then
-		cut -d ' ' -f 1-$case_control_header_columns < $infile > $snp_info_file
-	else
-		touch $snp_info_file
-	fi
-	# remove all header rows/columns
-	# remove header rows by writing all lines except top lines
-	if [[ $case_control_header_rows -ge 0 ]]
-	then
-		tail -n $num_snps $outfile1 > $outfile2
-	fi
-	# remove header columns with --complement option
-	if [[ $case_control_header_columns -ge 0 ]]
-	then
-		cut -d ' ' -f 1-$case_control_header_columns --complement < $outfile2 > $outfile3
-	fi
-	# file should now have columns > rows
-	num_rows=`wc -l $outfile3`
-	num_cols=`head -n 1 $outfile3 | wc -w`
-	num_rows=${num_rows%% *}
-	num_cols=${num_cols%% *}
-	#echo "file has $num_rows rows and $num_cols columns"
-	# if not, has snps as rows, transpose so that snps are columns (required by carriers)
-	delim="none"
-	printout="false"
-	if [[ $num_rows -gt $num_cols ]]
-	then
-		#echo "transposing input file $infile"
-		python3 transpose.py $outfile3 $delim $outfile4 $printout 
-		num_rows=`wc -l $outfile4`
-		num_cols=`head -n 1 $outfile4 | wc -w`
-		num_rows=${num_rows%% *}
-		num_cols=${num_cols%% *}
-		#echo "file has $num_rows rows and $num_cols columns"
-	else
-		cp $outfile3 $outfile4
-	fi
-	cp $outfile4 $resultfile
-	rm $outfile1 $outfile2 $outfile3 $outfile4
-}
+	response=`sbatch -p $slurm_partition --mem $slurm_mem --output=$slurm_output --time=$slurm_time clean.sh $case_file $control_file $case_control_header_rows $case_control_header_columns $delim $tmp_dir $num_snps $snp_info_file $skip`
+	tmp=${response#*Submitted batch job}
+	pid=`echo $tmp | sed "s/ //g"`
+	echo "running sbatch $pid"
+elif [[ $skip != "first" ]]
+then
+	echo "running clean.sh"
+	bash clean.sh $case_file $control_file $case_control_header_rows $case_control_header_columns $delimiter $tmp_dir $num_snps $snp_info_file $skip
+fi
 
-infile=$case_file
-outfile="$tmp_dir/case_file.txt"
-clean $infile $outfile
-case_file=$outfile
-infile=$control_file
-outfile="$tmp_dir/control_file.txt"
-clean $infile $outfile
-control_file=$outfile
-let case_control_header_rows=0
-let case_control_header_columns=0
+if [[ $skip != "first" && $granularity1 -gt 0 ]]
+then
+	echo "waiting for processes to complete"
+	params="sacct -j $pid --format=state"
+	#echo $params
+	stats=`$params`
+	let stat=`echo $stats | grep "COMPLETED" | wc -l`
+	#echo $stat
+	let stat2=`echo $stats | grep "FAILED" | wc -l`
+	while [[ $stat -eq 0 && $stat2 -eq 0 ]]
+	do
+		sleep 1
+		stats=`$params`
+		let stat=`echo $stats | grep "COMPLETED" | wc -l`
+		let stat2=`echo $stats | grep "FAILED" | wc -l`
+		#echo $stat
+	done
+	if [[ $stat2 -ne 0 ]]
+	then
+		echo "process $pid failed"
+		exit 1
+	fi
+	echo "process $pid completed"
+fi
 
 # mproc
+
+case_file="$tmp_dir/case_file.txt"
+control_file="$tmp_dir/control_file.txt"
+
+let case_control_header_rows=0
+let case_control_header_columns=0
 
 infile=$case_file
 outfile=$gml_file
@@ -356,4 +329,8 @@ else
 	echo "complete"
 	echo "************************************"
 fi
+
+t2=`echo $(date +'%s')`
+t3=$((t2 - t1))
+echo "time elapsed = $t3 s"
 
